@@ -1,0 +1,99 @@
+body {
+	width:890px;
+	padding-top:30px;
+	margin:auto;
+}
+
+h1, h2, h3 {
+	font-family:serif;
+}
+
+header {
+	border-bottom:1px solid #EEEEEE;
+}
+
+header a {
+	color:#000000;
+	text-decoration:none;
+}
+
+header a:hover {
+	color:#999999;
+}
+
+nav {
+	color:#999999;
+	font-family:serif;
+	font-size:12px;
+	display:inline;
+	padding-left:2em;
+}
+
+nav a {
+	color:#740103;
+	text-decoration:none;
+}
+
+nav ul {
+	list-style-type:circle;
+	display:inline;
+}
+
+nav li {
+	display:inline;
+	padding-right:2em;
+}
+
+#headertext {
+	font-family:Philosopher, Georgia, serif;
+	font-size:2.5em;
+}
+
+#blarticle {
+	font-family:sans-serif;
+	text-indent:2px;
+	text-align:justify;
+	padding-top:2em;
+	line-height:1.6em;
+	margin-bottom:4px;
+}
+
+#blarticle img {
+	float:right;
+	clear:left;
+	margin-left:1.5em;
+}
+
+#blarticle h1 {
+	font-weight:normal;
+	font-size:2em;
+	margin-bottom:2em;
+	font-family:Philosopher, sans-serif;
+}
+
+#blarticle h2, #blarticle h3 {
+	color:#999999;
+	font-weight:normal;
+	font-family:Philosopher, sans-serif;
+	margin-top:2em;
+	margin-bottom:1.5px;
+}
+
+#blarticle a {
+	color:#740103;
+	text-decoration:none;
+}
+
+#blarticle a:hover {
+	border-bottom:1px solid #333333;
+}
+
+#blarticle ul li {
+	padding-bottom:0.5em;
+	list-style-type:hebrew;
+}
+
+#kitty {
+	float:right;
+}
+
