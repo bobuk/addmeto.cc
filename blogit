@@ -107,16 +107,19 @@ class MarkDownEntry(Entry):
                                                  self.page, 'index.html')
         self.permalink = config['site'] + config['local']['results']['site'] + self.page
 
-    def do(self, template):
-        return self.do_to(template, self.result)
+    def do(self, template, layout):
+        return self.do_to(template, layout, self.result)
 
-    def do_to(self, template, fpath):
-        res = pystache.render(open(template, 'r').read(),
-            {
-                'conf': config, 'title': self.title,
-                'cdate': self.cdate, 'fdate': self.fdate,
-                'content': self.content.replace('\n',' '), 'permalink': self.permalink
-            })
+    def do_to(self, template, layout, fpath):
+        renderer = pystache.Renderer(partials={
+            'main_content': open(template, 'r').read()
+        })
+        res = renderer.render(open(layout, 'r').read(), {
+            'conf': config, 'title': self.title,
+            'cdate': self.cdate, 'fdate': self.fdate,
+            'content': self.content.replace('\n',' '), 'permalink': self.permalink
+        })
+
         with saveto(fpath) as fl:
             fl.write(res)
 
@@ -125,20 +128,25 @@ class Archive:
         self.idx = idx
         self.results = os.path.join(config['local']['results']['archive'], 'index.html')
 
-    def do(self, template):
+    def do(self, template, layout):
         items = []
         for x in reversed(self.idx['idx']):
             items.append({
                 'fname': self.idx[x]['permalink'],
                 'subtitle': self.idx[x]['title'],
                 })
-        res = pystache.render(open(template, 'r').read(),
-            {
-                'conf': config,
-                'title': 'Archive',
-                'items': items,
-                'permalink': config['site'] + '/archive'
-            })
+
+        renderer = pystache.Renderer(partials={
+            'main_content': open(template, 'r').read()
+        })
+
+        res = renderer.render(open('source/templates/layout.mustache', 'r').read(), {
+            'conf': config,
+            'title': 'Archive',
+            'items': items,
+            'permalink': config['site'] + '/archive'
+        })
+
         with saveto(self.results) as fl:
             fl.write(res)
 
@@ -211,10 +219,11 @@ def gen(page=current_date, force=False):
     with Index(ro=True) as idx:
         if (page not in idx['idx']) or (idx['idx'][-1] == page):
             entry.is_index = True
-    entry.do(config['local']['templates']['post'])
+    entry.do(config['local']['templates']['post'], config['local']['templates']['layout'])
     sys.stdout.write('File %s writen\n' % entry.result)
     if entry.is_index:
         entry.do_to(config['local']['templates']['post'],
+                    config['local']['templates']['layout'],
                     config['local']['results']['path'] + 'index.html')
         sys.stdout.write('Page ' + page + ' also is index\n')
     with Index() as idx:
@@ -231,7 +240,7 @@ def gen(page=current_date, force=False):
 def archive():
     '''regen /arhive page'''
     f = Archive(Index(ro=True))
-    f.do(config['local']['templates']['archive'])
+    f.do(config['local']['templates']['archive'], config['local']['templates']['layout'])
     sys.stdout.write('Archive ' + f.results + ' saved\n')
 
 @baker.command
