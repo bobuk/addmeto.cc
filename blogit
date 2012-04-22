@@ -235,7 +235,7 @@ def gen(page=current_date, force=False):
                         break
                 if x == page:
                     entry.is_index = True
-        entry.do(config['local']['templates']['post'])
+        entry.do(config['local']['templates']['post'], config['local']['templates']['layout'])
         sys.stdout.write('File %s writen\n' % entry.result)
         if entry.is_index:
             entry.do_to(config['local']['templates']['post'],
