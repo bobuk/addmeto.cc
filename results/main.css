@@ -1,5 +1,5 @@
 body {
-	width:890px;
+	max-width:890px;
 	padding:30px;
 	margin:auto;
 }
@@ -18,7 +18,7 @@ header a {
 }
 
 header a:hover {
-	color:#999999;
+	color:#740103;
 }
 
 nav {
@@ -51,8 +51,7 @@ nav li {
 
 #blarticle {
 	font-family:sans-serif;
-	text-indent:2px;
-	text-align:justify;
+	text-align:left;
 	padding-top:2em;
 	line-height:1.6em;
 	margin-bottom:4px;
@@ -67,7 +66,7 @@ nav li {
 #blarticle h1 {
 	font-weight:normal;
 	font-size:2em;
-	margin-bottom:2em;
+	margin-bottom:1em;
 	font-family:Philosopher, sans-serif;
 }
 
@@ -85,7 +84,7 @@ nav li {
 }
 
 #blarticle a:hover {
-	border-bottom:1px solid #333333;
+	border-bottom:1px solid;
 }
 
 #blarticle ul li {
