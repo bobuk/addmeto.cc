@@ -143,7 +143,7 @@ class Archive:
             'main_content': open(template, 'r').read()
         })
 
-        res = renderer.render(open('source/templates/layout.mustache', 'r').read(), {
+        res = renderer.render(open(layout, 'r').read(), {
             'conf': config,
             'title': 'Archive',
             'items': items,
