@@ -198,6 +198,16 @@ def entry(page = current_date, overwrite = False, edit = False):
         sys.stdout.write(fullpath + '\n')
     return
 
+@baker.command
+def show(page=current_date):
+    """print out page"""
+    if '.' in page: page=page.rsplit('.', 1)[0]
+    fpath = os.path.join(config['local']['posts'], page + '.md')
+    entry = MarkDownEntry(page)
+    if entry:
+        sys.stdout.write(entry.content.replace('\n', ' '))
+    return
+
 @baker.command(
     shortopts={ "page":  "p",
                 "force": "f"},
@@ -262,12 +272,14 @@ def feed():
     shortopts={
             "wipe": "w",
             "force": "f",
-            "noindex": "n"},
+            "noindex": "n",
+            "andsync": "s"},
     params={"wipe":         "wipe out current index",
             "force":    "force regen pages",
-            "noindex": "do not regen feed and archives"}
+            "noindex": "do not regen feed and archives",
+            "andsync": "execute `sync` command right after finish"}
     )
-def regen(wipe=False, force = False, noindex = False):
+def regen(wipe=False, force = False, noindex = False, andsync = False):
     """regenerate index and all pages"""
     if wipe:
         with Index() as idx:
@@ -280,6 +292,7 @@ def regen(wipe=False, force = False, noindex = False):
 
 @baker.command
 def sync():
+    """syncronize results tree with s3 server"""
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
     os.system("s3cmd --no-preserve --recursive --exclude=feed sync * " + config['s3']['bucket'])
@@ -288,6 +301,7 @@ def sync():
 
 @baker.command
 def server(port = 8000):
+    """run a local http server in results tree"""
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
     import http.server
