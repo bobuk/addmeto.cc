@@ -1,4 +1,5 @@
 .index.db
+config.json
 results/archive/
 results/feed
 results/index.html

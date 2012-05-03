@@ -1,0 +1,46 @@
+{
+    "site":     "http://addmeto.cc/",
+    "title":    "Бобук - Еще один линкблог",
+    "author":   "Григорий Бакунов",
+
+    "mode": "markdown",
+
+    "local": {
+        "templates": {
+           "path": "source/templates/",
+           "post": "source/templates/index.mustache",
+           "archive": "source/templates/archive.mustache"
+        },
+        "editor": "open -a /Applications/Valletta.app '%s'",
+        "posts": "source/posts/",
+        "results": {
+           "path": "results/",
+           "posts": "results/post/",
+           "site": "post/",
+           "archive": "results/archive/",
+           "feed": "results/feed"
+        },
+        "port": 8080,
+        "index": "source/.index.db"
+    },
+    "s3": {
+        "bucket": "s3://addmeto.cc/"
+    },
+    "tags": {
+        "NSFW": "♂",
+        "fun": "✌",
+        "patent": "✍",
+        "browser": "⚀",
+        "mobile": "m",
+        "hate": "⚔",
+        "startup": "$",
+        "html": "‽",
+        "opensource": "⚓",
+        "highload": "✪",
+        "android": "♡",
+        "search": "⚐",
+        "functional": "☭",
+        "unix": "♏",
+        "lowlevel": "▽"
+    }
+}
