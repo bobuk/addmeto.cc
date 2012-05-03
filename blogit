@@ -202,7 +202,7 @@ def entry(page = current_date, overwrite = False, edit = False):
             return
     else:
         with saveto(fullpath) as fl:
-            fl.write('# Title\n\n\n')
+            fl.write('# Title\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n')
     if edit:
         os.system(config['local']['editor'] % fullpath)
     else:
