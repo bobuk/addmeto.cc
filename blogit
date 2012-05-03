@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 import sys
 sys.path.insert(0, 'libs/')
-import os, json
-from datetime import datetime, timedelta
+
+import os
+import json
 import re
-
-import pystache, baker
+import baker
+import pystache
 import markdown2 as markdown
-
+from datetime import datetime, timedelta
 from pyatom import AtomFeed
-current_date = datetime.now().strftime('%Y-%m-%d')
-daydelta = timedelta(days = 1)
 
-def loadConfigs(path = os.getcwd()):
+current_date = datetime.now().strftime('%Y-%m-%d')
+daydelta = timedelta(days=1)
+
+
+def loadConfigs(path=os.getcwd()):
     fname = os.path.join(path, 'config.json')
     if not os.path.isfile(fname):
         return None
     return json.load(open(fname))
 
 config = loadConfigs()
+
 
 def saveto(fres):
     dname = os.path.dirname(fres)
@@ -28,6 +32,7 @@ def saveto(fres):
         pass
     return open(fres, 'w')
 
+
 def tags_cludge(tag):
     tag = tag.group(1)
     if tag not in config['tags']:
@@ -36,14 +41,16 @@ def tags_cludge(tag):
     tag = config['tags'][tag]
     return tag
 
+
 def makeHtml(inbound):
     res = inbound
-    res = markdown.markdown(res, extras = ["smarty-pants"])
+    res = markdown.markdown(res, extras=["smarty-pants"])
     res = re.sub('\{(\w+)\}', tags_cludge, res)
     return res
 
+
 class Index(dict):
-    def __init__(self, filename = None, ro=False, *args, **kwds):
+    def __init__(self, filename=None, ro=False, *args, **kwds):
         self.filename = filename if filename else config['local']['index']
         self.ro = ro
         if os.path.isfile(self.filename):
@@ -74,8 +81,9 @@ class Index(dict):
     def __exit__(self, *exc_info):
         self.close()
 
+
 class Entry:
-    def __init__(self, page, empty = False):
+    def __init__(self, page, empty=False):
         self.is_index = False
         post_path = config['local']['posts']
         self.fullpath = os.path.join(post_path, page)
@@ -83,7 +91,7 @@ class Entry:
             self.fullpath = self.fullpath + '.md'
         self.page = page
         self.title = None
-        self.cdate  = os.path.getmtime(self.fullpath)
+        self.cdate = os.path.getmtime(self.fullpath)
         self.fdate = self.cdate
         if not empty and os.path.isfile(self.fullpath):
             self.load()
@@ -94,6 +102,7 @@ class Entry:
     def load(self):
         self.content = open(self.fullpath).read()
         self.parse()
+
 
 class MarkDownEntry(Entry):
     def parse(self):
@@ -131,10 +140,11 @@ class MarkDownEntry(Entry):
             {
                 'conf': config, 'title': self.title,
                 'cdate': self.cdate, 'fdate': self.fdate,
-                'content': self.content.replace('\n',' '), 'permalink': self.permalink
+                'content': self.content.replace('\n', ' '), 'permalink': self.permalink
             })
         with saveto(fpath) as fl:
             fl.write(res)
+
 
 class Archive:
     def __init__(self, idx):
@@ -160,10 +170,12 @@ class Archive:
         with saveto(self.results) as fl:
             fl.write(res)
 
+
 class RSS:
     def __init__(self, idx):
         self.idx = idx
         self.results = os.path.join(config['local']['results']['feed'])
+
     def do(self):
         feed = AtomFeed(title=config['title'],
                     feed_url=config['site'] + "feed",
@@ -174,7 +186,7 @@ class RSS:
                 continue
             page = MarkDownEntry(x)
             feed.add(title=self.idx[x]['title'],
-                 content= page.content,
+                 content=page.content,
                  content_type="html",
                  author=config['author'],
                  url=self.idx[x]['permalink'],
@@ -182,6 +194,7 @@ class RSS:
             )
         with saveto(self.results) as fl:
             fl.write(feed.to_string())
+
 
 @baker.command(
     shortopts={
@@ -191,13 +204,13 @@ class RSS:
             "overwrite":    "overwrite page even if exists",
             "edit":         "open text editor if page created"}
     )
-def entry(page = current_date, overwrite = False, edit = False):
+def entry(page=current_date, overwrite=False, edit=False):
     """create and edit new blog entry"""
     path = config['local']['posts']
     if page == 'yesterday':
-        page = (datetime.now() - timedelta(days = 1)).strftime('%Y-%m-%d')
+        page = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
     elif page == 'tomorrow':
-        page = (datetime.now() + timedelta(days = 1)).strftime('%Y-%m-%d')
+        page = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     fullpath = os.path.join(path, page + '.md')
     if os.path.isfile(fullpath):
@@ -213,25 +226,29 @@ def entry(page = current_date, overwrite = False, edit = False):
         sys.stdout.write(fullpath + '\n')
     return
 
+
 @baker.command
 def show(page=current_date):
     """print out page"""
-    if '.' in page: page=page.rsplit('.', 1)[0]
+    if '.' in page:
+        page = page.rsplit('.', 1)[0]
     fpath = os.path.join(config['local']['posts'], page + '.md')
     entry = MarkDownEntry(page)
     if entry:
         sys.stdout.write(entry.content.replace('\n', ' '))
     return
 
+
 @baker.command(
-    shortopts={ "page":  "p",
-                "force": "f"},
+    shortopts={"page":  "p",
+               "force": "f"},
     params={"page":         "page name",
             "force":    "force regen page"}
     )
 def gen(page=current_date, force=False):
     """generate a static .html for a page"""
-    if '.' in page: page=page.rsplit('.', 1)[0]
+    if '.' in page:
+        page = page.rsplit('.', 1)[0]
     fpath = os.path.join(config['local']['posts'], page + '.md')
     if not force:
         with Index(ro=True) as idx:
@@ -239,7 +256,7 @@ def gen(page=current_date, force=False):
                 return
     entry = MarkDownEntry(page)
     if entry.draft:
-        sys.stdout.write('Page '+ page + ' drafted.\n' )
+        sys.stdout.write('Page ' + page + ' drafted.\n')
     else:
         with Index(ro=True) as idx:
             if page not in idx['idx']:
@@ -260,14 +277,15 @@ def gen(page=current_date, force=False):
             sys.stdout.write('Page ' + page + ' also is index\n')
     with Index() as idx:
         idx[page] = dict(
-            permalink = entry.permalink,
-            title     = entry.title,
-            cdate     = entry.cdate,
-            fdate     = entry.fdate,
-            draft     = entry.draft,
+            permalink=entry.permalink,
+            title=entry.title,
+            cdate=entry.cdate,
+            fdate=entry.fdate,
+            draft=entry.draft,
         )
         if page not in idx['idx']:
             idx['idx'].append(page)
+
 
 @baker.command
 def archive():
@@ -276,6 +294,7 @@ def archive():
     f.do(config['local']['templates']['archive'])
     sys.stdout.write('Archive ' + f.results + ' saved\n')
 
+
 @baker.command
 def feed():
     '''regen /feed page'''
@@ -283,18 +302,19 @@ def feed():
     f.do()
     sys.stdout.write('Atom feed ' + f.results + ' saved\n')
 
+
 @baker.command(
     shortopts={
             "wipe": "w",
             "force": "f",
             "noindex": "n",
             "andsync": "s"},
-    params={"wipe":         "wipe out current index",
-            "force":    "force regen pages",
+    params={"wipe": "wipe out current index",
+            "force": "force regen pages",
             "noindex": "do not regen feed and archives",
             "andsync": "execute `sync` command right after finish"}
     )
-def regen(wipe=False, force = False, noindex = False, andsync = False):
+def regen(wipe=False, force=False, noindex=False, andsync=False):
     """regenerate index and all pages"""
     if wipe:
         with Index() as idx:
@@ -307,17 +327,19 @@ def regen(wipe=False, force = False, noindex = False, andsync = False):
     if andsync:
         sync()
 
+
 @baker.command
 def sync():
     """syncronize results tree with s3 server"""
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
     os.system("s3cmd --no-preserve --recursive --exclude=feed sync * " + config['s3']['bucket'])
-    os.system("s3cmd --no-preserve -m 'text/xml' put feed "+ config['s3']['bucket'])
+    os.system("s3cmd --no-preserve -m 'text/xml' put feed " + config['s3']['bucket'])
     os.chdir(cwd)
 
+
 @baker.command
-def server(port = 8000):
+def server(port=8000):
     """run a local http server in results tree"""
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
