@@ -228,7 +228,8 @@ def show(page=current_date):
     """print out page"""
     if '.' in page:
         page = page.rsplit('.', 1)[0]
-    fpath = os.path.join(config['local']['posts'], page + '.md')
+    # (next var seems never used)
+    # fpath = os.path.join(config['local']['posts'], page + '.md')
     entry = MarkDownEntry(page)
     if entry:
         sys.stdout.write(entry.content.replace('\n', ' '))
@@ -258,10 +259,12 @@ def gen(page=current_date, force=False):
             if page not in idx['idx']:
                 entry.is_index = True
             else:
-                last = None
+                # (next var seems never used)
+                # last = None
                 for x in reversed(idx['idx']):
                     if 'draft' not in idx[x] or idx[x]['draft'] == False:
-                        last = x
+                        # (next var seems never used)
+                        # last = x
                         break
                 if x == page:
                     entry.is_index = True
