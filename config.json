@@ -25,22 +25,5 @@
     },
     "s3": {
         "bucket": "s3://addmeto.cc/"
-    },
-    "tags": {
-        "NSFW": "♂",
-        "fun": "✌",
-        "patent": "✍",
-        "browser": "⚀",
-        "mobile": "m",
-        "hate": "⚔",
-        "startup": "$",
-        "html": "‽",
-        "opensource": "⚓",
-        "highload": "✪",
-        "android": "♡",
-        "search": "⚐",
-        "functional": "☭",
-        "unix": "♏",
-        "lowlevel": "▽"
     }
 }

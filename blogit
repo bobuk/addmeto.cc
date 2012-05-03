@@ -29,16 +29,12 @@ def saveto(fres):
     return open(fres, 'w')
 
 def tags_cludge(tag):
-    tag = tag.group(1)
-    if tag not in config['tags']:
-        sys.stderr.write('Tag {' + tag + '} not found in config')
-        sys.exit(-14)
-    tag = config['tags'][tag]
+    tag = "<small>#" + tag.group(1) + "</small>"
     return tag
 
 def makeHtml(inbound):
     res = inbound
-    res = markdown.markdown(res, extras = ["smarty-pants"])
+    res = markdown.markdown(res)
     res = re.sub('\{(\w+)\}', tags_cludge, res)
     return res
 
