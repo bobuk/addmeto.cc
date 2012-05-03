@@ -228,8 +228,6 @@ def show(page=current_date):
     """print out page"""
     if '.' in page:
         page = page.rsplit('.', 1)[0]
-    # (next var seems never used)
-    # fpath = os.path.join(config['local']['posts'], page + '.md')
     entry = MarkDownEntry(page)
     if entry:
         sys.stdout.write(entry.content.replace('\n', ' '))
