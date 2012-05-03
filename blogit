@@ -3,6 +3,7 @@ import sys
 sys.path.insert(0, 'libs/')
 import os, json
 from datetime import datetime, timedelta
+import re
 
 import pystache, baker
 import markdown2 as markdown
@@ -26,6 +27,20 @@ def saveto(fres):
     except:
         pass
     return open(fres, 'w')
+
+def tags_cludge(tag):
+    tag = tag.group(1)
+    if tag not in config['tags']:
+        sys.stderr.write('Tag {' + tag + '} not found in config')
+        sys.exit(-14)
+    tag = config['tags'][tag]
+    return tag
+
+def makeHtml(inbound):
+    res = inbound
+    res = markdown.markdown(res, extras = ["smarty-pants"])
+    res = re.sub('\{(\w+)\}', tags_cludge, res)
+    return res
 
 class Index(dict):
     def __init__(self, filename = None, ro=False, *args, **kwds):
@@ -103,7 +118,7 @@ class MarkDownEntry(Entry):
             self.title = title
             self.content = rest
         self.draft = 'draft' in self.title or 'DRAFT' in self.title
-        self.content = markdown.markdown(self.content)
+        self.content = makeHtml(self.content)
         self.result = os.path.join(config['local']['results']['posts'],
                                                  self.page, 'index.html')
         self.permalink = config['site'] + config['local']['results']['site'] + self.page
