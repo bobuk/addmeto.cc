@@ -1,7 +1,7 @@
 body {
 	width:890px;
-	padding:30px;
 	margin:auto;
+	padding:30px;
 }
 
 h1, h2, h3 {
@@ -56,6 +56,11 @@ nav li {
 	padding-top:2em;
 	line-height:1.6em;
 	margin-bottom:4px;
+}
+
+#blarticle small {
+	font-size:9px;
+	color:#BBBBBB;
 }
 
 #blarticle img {
