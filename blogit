@@ -215,7 +215,7 @@ def entry(page=current_date, overwrite=False, edit=False):
             return
     else:
         with saveto(fullpath) as fl:
-            fl.write('# Title\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n')
+            fl.write('# Title\n\n-----\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n')
     if edit:
         os.system(config['local']['editor'] % fullpath)
     else:
@@ -228,8 +228,6 @@ def show(page=current_date):
     """print out page"""
     if '.' in page:
         page = page.rsplit('.', 1)[0]
-    # (next var seems never used)
-    # fpath = os.path.join(config['local']['posts'], page + '.md')
     entry = MarkDownEntry(page)
     if entry:
         sys.stdout.write(entry.content.replace('\n', ' '))
@@ -259,14 +257,12 @@ def gen(page=current_date, force=False):
             if page not in idx['idx']:
                 entry.is_index = True
             else:
-                # (next var seems never used)
-                # last = None
+                last = None
                 for x in reversed(idx['idx']):
                     if 'draft' not in idx[x] or idx[x]['draft'] == False:
-                        # (next var seems never used)
-                        # last = x
+                        last = x
                         break
-                if x == page:
+                if last == page:
                     entry.is_index = True
         entry.do(config['local']['templates']['post'])
         sys.stdout.write('File %s writen\n' % entry.result)
