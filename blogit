@@ -39,11 +39,27 @@ def tags_cludge(tag):
 
 
 def makeHtml(inbound):
-    res = inbound
+    res = []
+    for line in inbound.split('\n'):
+        line = line.strip()
+        if line.startswith('>>') and line.endswith('<<'):
+            line = line[2:-2].strip()
+            if line.startswith('!['):
+                # inline image!
+                tp, url = line[2:-1].split('](')
+                if tp == 'center':
+                    line = '<div style="text-align: center"><img src="' + \
+                    url + \
+                    '" style="float: none" /></div>'
+            else:
+                raise Error('Unknown inline')
+        res.append(line)
+    res = '\n'.join(res)
+
     res = markdown.markdown(res)
+
     res = re.sub('\{(\w+)\}', tags_cludge, res)
     return res
-
 
 class Index(dict):
     def __init__(self, filename=None, ro=False, *args, **kwds):
