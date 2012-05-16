@@ -31,6 +31,7 @@
 </script>
 <header><span id="headertext" ><a href="/" >Еще один линкблог<span style="font-size:9pt; position:relative; top:-9px; left:2px; " >™</span></a><nav><ul><li><a href="/archive" >Архив</a></li><li><a href="/feed" >RSS</a></li></ul></nav></span><img alt="" src="/images/Black-cat.png" id="kitty" ></header><article id="blarticle" >
 <a href="{{ permalink }}" style="color:#000000; " ><h1>{{ title }}</h1></a>{{& content }}</article>
+<div id="committers" ><a href="https://github.com/bobuk/addmeto.cc/blob/master/source/posts/{{ page }}.md" >ЗаGitHubить!</a> {{{ committers }}}</div>
 <div style="margin-bottom:2em; " ><a href="{{ permalink }}" style="font-size:1.6em; font-family:Philosopher; margin-right:2em; color:#000000; " ># постоянная ссылка</a> <a href="http://flattr.com/thing/619239/" target="_blank" >
 <img src="http://api.flattr.com/button/flattr-badge-large.png" alt="Flattr this" title="Flattr this" border="0" ></a>
 <iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/small.xml?uid=4100130214808&button-text=05&button-size=s&button-color=black&targets=%d0%9d%d0%b0+%d0%bf%d0%be%d0%b4%d0%b4%d0%b5%d1%80%d0%b6%d0%ba%d1%83+addmeto.cc&default-sum=100" width="auto" height="31" ></iframe></div>
@@ -44,5 +45,6 @@ hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget
 var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
 })();
 </script>
+
 
 </body></html>

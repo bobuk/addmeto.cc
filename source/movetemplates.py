@@ -17,6 +17,8 @@ def build(fname = 'index.html', topath = mainpath,
         res = first + content + last
         res = res.replace('@TITLE@', '{{ title }}')
         res = res.replace('@permalink@', '{{ permalink }}')
+        res = res.replace('@committers@', '{{{ committers }}}')
+        res = res.replace('@page@', '{{ page }}')
         res = res.replace('main.css', '/main.css')
         res = res.replace('images/', '/images/')
         with open(topath, 'w') as flw:

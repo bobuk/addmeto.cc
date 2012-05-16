@@ -5,6 +5,7 @@ import os
 import json
 from datetime import datetime, timedelta
 import re
+import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
 
 import pystache
 import baker
@@ -14,6 +15,10 @@ from pyatom import AtomFeed
 current_date = datetime.now().strftime('%Y-%m-%d')
 daydelta = timedelta(days=1)
 
+def getCommiters(path):
+    url = 'https://api.github.com/repos/bobuk/addmeto.cc/commits?path=source/posts/' \
+            +  path +'.md' # + '&callback=github'
+    return urlopen(url)
 
 def loadConfigs(path=os.getcwd()):
     fname = os.path.join(path, 'config.json')
@@ -144,7 +149,20 @@ class MarkDownEntry(Entry):
                                                  self.page, 'index.html')
         self.permalink = config['site'] + config['local']['results']['site'] + self.page
 
+    def commiters(self):
+        res = ""
+        com = getCommiters(self.page)
+        for x in com:
+            committer = x['committer']
+            c = '<img src="http://gravatar.com/avatar/' + committer['gravatar_id'] + '?s=16"/>'
+            c = '<a href="' + committer['url'] + '">' + c + committer['login']+ '</a>'
+            c = '<span class="committer">' + c + '</span>'
+            res += c
+        res += ''
+        return res
+
     def do(self, template):
+        self.commiters()
         return self.do_to(template, self.result)
 
     def do_to(self, template, fpath):
@@ -152,7 +170,10 @@ class MarkDownEntry(Entry):
             {
                 'conf': config, 'title': self.title,
                 'cdate': self.cdate, 'fdate': self.fdate,
-                'content': self.content.replace('\n', ' '), 'permalink': self.permalink
+                'content': self.content.replace('\n', ' '),
+                'committers': self.commiters(),
+                'page': self.page,
+                'permalink': self.permalink
             })
         with saveto(fpath) as fl:
             fl.write(res)
