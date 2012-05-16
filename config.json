@@ -11,7 +11,7 @@
            "post": "source/templates/index.mustache",
            "archive": "source/templates/archive.mustache"
         },
-        "editor": "aquamacs '%s'",
+        "editor": "subl '%s'",
         "posts": "source/posts/",
         "results": {
            "path": "results/",
