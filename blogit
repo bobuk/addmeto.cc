@@ -155,7 +155,7 @@ class MarkDownEntry(Entry):
         for x in com:
             committer = x['committer']
             c = '<img src="http://gravatar.com/avatar/' + committer['gravatar_id'] + '?s=16"/>'
-            c = '<a href="' + committer['url'] + '">' + c + committer['login']+ '</a>'
+            c = '<a href="' + committer['url'].replace('api.','').replace('/users', '') + '">' + c + committer['login']+ '</a>'
             c = '<span class="committer">' + c + '</span>'
             res += c
         res += ''
