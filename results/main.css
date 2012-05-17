@@ -113,6 +113,10 @@ nav li {
 	border-bottom:1px solid #333333;
 }
 
+#blarticle a:visited { 
+	color:#7532CC;
+}
+
 #blarticle ul li {
 	padding-bottom:0.5em;
 	list-style-type:hebrew;
