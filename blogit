@@ -39,7 +39,11 @@ def saveto(fres):
 
 
 def tags_cludge(tag):
-    tag = "<small>#" + tag.group(1) + "</small>"
+    c = tag.group(1)
+    if c == '*':
+        tag = '<b style="font-size: 1.6em; color: yellow;">✭</b>'
+    else:
+        tag = "<small>#" + c + "</small>"
     return tag
 
 
@@ -63,7 +67,7 @@ def makeHtml(inbound):
 
     res = markdown.markdown(res)
 
-    res = re.sub('\{(\w+)\}', tags_cludge, res)
+    res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
     return res
 
 class Index(dict):
