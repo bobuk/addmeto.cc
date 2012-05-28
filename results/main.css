@@ -118,8 +118,12 @@ nav li {
 	list-style-type:hebrew;
 }
 
-#kitty {
-	float:right;
+#livefyre .lf_comment_container .lf_comment .lf_comment_body p {
+	font-size:1.6em;
+}
+
+#livefyre .mceLayout {
+	font-size:17px;
 }
 
 /* LANDSCAPE PHONE TO SMALL DESKTOP & PORTRAIT TABLET */
@@ -211,12 +215,4 @@ nav li {
 		margin: 0 auto !important;
 		text-align:center;
 	}
-
-	/* comments iframe thing */
-	#hypercomments_widget {
-		max-width:100%;
-		overflow: auto;
-		-webkit-overflow-scrolling:touch;
-	}
-
 }
