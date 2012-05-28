@@ -11,7 +11,7 @@
            "post": "source/templates/index.mustache",
            "archive": "source/templates/archive.mustache"
         },
-        "editor": "open -a /Applications/Valletta.app '%s'",
+        "editor": "open -a /Applications/Byword.app '%s'",
         "posts": "source/posts/",
         "results": {
            "path": "results/",
