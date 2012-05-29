@@ -50,7 +50,7 @@ nav li {
 }
 
 #blarticle {
-	font-family:sans-serif;
+	font-family: HelveticaNeue, Helvetica, sans-serif;
 	text-indent:2px;
 	text-align:justify;
 	padding-top:2em;
@@ -119,13 +119,22 @@ nav li {
 }
 
 #livefyre .lf_comment_container .lf_comment .lf_comment_body p {
-	font-size:1.2em;
+/*	font-size:1.2em; */
 	font-family: sans-serif;
 }
 
 #livefyre .mceLayout {
 	font-size:17px;
 }
+
+a {
+  color: #0088cc;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #005580;
+  text-decoration: underline;
 
 /* LANDSCAPE PHONE TO SMALL DESKTOP & PORTRAIT TABLET */
 
