@@ -118,13 +118,10 @@ nav li {
 	list-style-type:hebrew;
 }
 
-#livefyre .lf_comment_container .lf_comment .lf_comment_body p {
-/*	font-size:1.2em; */
-	font-family: sans-serif;
-}
-
-#livefyre .mceLayout {
-	font-size:17px;
+#hypercomments_widget {
+    max-width: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling:touch;
 }
 
 a {
