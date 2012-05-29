@@ -119,7 +119,8 @@ nav li {
 }
 
 #livefyre .lf_comment_container .lf_comment .lf_comment_body p {
-	font-size:1.6em;
+	font-size:1.2em;
+	font-family: sans-serif;
 }
 
 #livefyre .mceLayout {
