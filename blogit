@@ -65,7 +65,7 @@ def makeHtml(inbound):
         res.append(line)
     res = '\n'.join(res)
 
-    res = markdown.markdown(res)
+    res = markdown.markdown(res, extras=["cuddled-lists"])
 
     res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
     return res
@@ -232,6 +232,16 @@ class RSS:
         with saveto(self.results) as fl:
             fl.write(feed.to_string())
 
+def get_true_page(page = current_date):
+    if 'yesterday' in page:
+        page = page.replace('yesterday', (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'))
+    elif 'tomorrow' in page:
+        page = page.replace('tomorrow', (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d'))
+    elif 'today' in page:
+        page = page.replace('today', datetime.now().strftime('%Y-%m-%d'))
+    if '.' in page:
+        page = page.rsplit('.', 1)[0]
+    return page
 
 @baker.command(
     shortopts={
@@ -244,10 +254,7 @@ class RSS:
 def entry(page=current_date, overwrite=False, edit=False):
     """create and edit new blog entry"""
     path = config['local']['posts']
-    if page == 'yesterday':
-        page = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-    elif page == 'tomorrow':
-        page = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+    page = get_true_page(page)
 
     fullpath = os.path.join(path, page + '.md')
     if os.path.isfile(fullpath):
@@ -267,8 +274,7 @@ def entry(page=current_date, overwrite=False, edit=False):
 @baker.command
 def show(page=current_date):
     """print out page"""
-    if '.' in page:
-        page = page.rsplit('.', 1)[0]
+    page = get_true_page(page)
     entry = MarkDownEntry(page)
     if entry:
         sys.stdout.write(entry.content.replace('\n', ' '))
@@ -283,8 +289,7 @@ def show(page=current_date):
     )
 def gen(page=current_date, force=False):
     """generate a static .html for a page"""
-    if '.' in page:
-        page = page.rsplit('.', 1)[0]
+    page = get_true_page(page)
     fpath = os.path.join(config['local']['posts'], page + '.md')
     if not force:
         with Index(ro=True) as idx:
