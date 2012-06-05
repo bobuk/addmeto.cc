@@ -1,5 +1,5 @@
 body {
-	width:890px;
+	max-width:890px;
 	margin:auto;
 	padding:30px;
 }
@@ -132,6 +132,7 @@ a {
 a:hover {
   color: #005580;
   text-decoration: underline;
+}
 
 /* LANDSCAPE PHONE TO SMALL DESKTOP & PORTRAIT TABLET */
 
@@ -175,6 +176,7 @@ a:hover {
 
 	#blarticle {
 		padding-top: 0;
+		text-align: left;
 	}
 
 	#blarticle h1 {
