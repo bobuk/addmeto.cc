@@ -13,6 +13,7 @@
         },
         "editor": "open -a /Applications/Byword.app '%s'",
         "posts": "source/posts/",
+        "drafts": "source/drafts/",
         "results": {
            "path": "results/",
            "posts": "results/post/",
