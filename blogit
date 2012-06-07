@@ -267,18 +267,63 @@ def entry(page=current_date, overwrite=False, edit=False):
 
 @baker.command(
     shortopts={
-            "page": "p"},
-    params={"page":         "page name",}
+            "source": "s"},
+    params={"source":         "source from config or url",}
     )
-def draft(page=current_date):
+def source(source=None):
+    def fill_template(links):
+        return \
+            '# Title\n\n' +               '\n'.join(links['other']) + \
+            '\n-----\n\n## Для всех\n\n' +'\n'.join(links['1'])+ \
+            '\n\n## На грани\n\n' +       '\n'.join(links['2']) + \
+            '\n\n## Для гиков\n\n' +      '\n'.join(links['3']) + \
+            '\n\n## Разное\n\n' +        '\n'.join(links['4']) + '\n\n'
+
+    if source == None:
+        source = sorted(config['sources'].keys())[0]
+    if '://' in source:
+        url = source
+    else:
+        url = config['sources'][source]
+
+    import feedparser
+    sys.stderr.write('Fetching from ' + url + '\n')
+    feed = feedparser.parse(urllib.request.urlopen(url).read())
+    res = {'1': [], '2': [], '3': [], '4': [], 'other': []}
+    for entry in feed.entries:
+        tags = entry['tags'][0]['term'].split(' ') if entry.get('tags', False) else []
+        t_in = 'other'
+        for x in tags:
+            if x in res:
+                t_in = x
+                break
+        item =  '* [' + entry['title'] + '](' + entry['link'] + ') '
+        item += entry['summary'] + ' {'
+        item += '} {'.join( (x for x in tags if x not in res) )
+        item += '}'
+        res[t_in].append(item)
+    return fill_template(res)
+
+@baker.command(
+    shortopts={
+            "page": "p",
+            "fetch": "F"},
+    params={"page":         "page name",
+            "fetch": "fetch draft from default source"}
+    )
+
+def draft(page=current_date, fetch = False):
     """create and edit draft"""
     path = config['local']['drafts']
     page = get_true_page(page)
 
     fullpath = os.path.join(path, page + '.md')
+    template = '# Title\n\n-----\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n'
+    if fetch:
+        template = source()
     if not os.path.isfile(fullpath):
         with saveto(fullpath) as fl:
-            fl.write('# Title\n\n-----\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n')
+            fl.write(template)
     sys.stdout.write(fullpath + '\n')
     os.system(config['local']['editor'] % fullpath)
     return
