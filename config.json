@@ -26,5 +26,8 @@
     },
     "s3": {
         "bucket": "s3://addmeto.cc/"
+    },
+    "sources" : {
+        "pinboard": "http://feeds.pinboard.in/rss/secret:3f9b2d260188a5b9849f/u:bobuk/toread/"
     }
 }
