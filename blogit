@@ -304,9 +304,12 @@ def source(source=None):
                 t_in = x
                 break
         item =  '* [' + entry['title'] + '](' + entry['link'] + ') '
-        item += entry['summary'] + ' {'
-        item += '} {'.join( (x for x in tags if x not in res) )
-        item += '}'
+        if 'summary' in entry:
+            item += entry['summary']
+        if tags:
+            item += ' {'
+            item += '} {'.join( (x for x in tags if x not in res) )
+            item += '}'
         res[t_in].append(item)
     return fill_template(res)
 
