@@ -434,7 +434,7 @@ def regenCSS():
     '''regen .less files to style.css'''
     cwd = os.getcwd()
     os.chdir(config['local']['templates']['path'] + 'bootstrap/less')
-    os.system("lessc -x style.less > " + \
+    os.system("lessc -x style.less | gzip -c -9 > " + \
                 cwd + '/' + config['local']['results']['path'] + 'style.css')
     os.chdir(cwd)
 
@@ -469,8 +469,9 @@ def sync():
     """syncronize results tree with s3 server"""
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
-    os.system("s3cmd --no-preserve --recursive --exclude=feed sync * " + config['s3']['bucket'])
-    os.system("s3cmd --no-preserve -m 'text/xml' put feed " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --recursive --exclude=feed --exclude=style.css sync * " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve -m 'text/xml' sync feed " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --add-header=Content-Encoding:gzip sync style.css " + config['s3']['bucket'])
     os.chdir(cwd)
 
 
