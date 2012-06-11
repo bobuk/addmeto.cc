@@ -4,7 +4,7 @@ sys.path.insert(0, 'libs/')
 import os
 import json
 from datetime import datetime, timedelta
-import re
+import re, shutil
 import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
 
 import pystache
@@ -147,7 +147,6 @@ class MarkDownEntry(Entry):
             title, rest = self.content.split('\n', 1)
             self.title = title
             self.content = rest
-        self.draft = 'draft' in self.title or 'DRAFT' in self.title
         self.content = makeHtml(self.content)
         self.result = os.path.join(config['local']['results']['posts'],
                                                  self.page, 'index.html')
@@ -158,8 +157,14 @@ class MarkDownEntry(Entry):
         com = getCommiters(self.page)
         for x in com:
             committer = x['committer']
-            c = '<img src="http://gravatar.com/avatar/' + committer['gravatar_id'] + '?s=16"/>'
-            c = '<a href="' + committer['url'].replace('api.','').replace('/users', '') + '">' + c + committer['login']+ '</a>'
+            try:
+                c = '<img src="http://gravatar.com/avatar/' + committer['gravatar_id'] + '?s=16"/>'
+            except:
+                c = ''
+                try:
+                    c = '<a class=btn href="' + committer['url'].replace('api.','').replace('/users', '') + '">' + c + committer['login']+ '</a>'
+                except:
+                    pass
             c = '<span class="committer">' + c + '</span>'
             res += c
         res += ''
@@ -191,8 +196,6 @@ class Archive:
     def do(self, template):
         items = []
         for x in reversed(self.idx['idx']):
-            if 'draft' in self.idx[x] and self.idx[x]['draft']:
-                continue
             items.append({
                 'fname': self.idx[x]['permalink'],
                 'subtitle': self.idx[x]['title'],
@@ -219,8 +222,6 @@ class RSS:
                     url=config['site'][:-1] if config['site'].endswith('/') else config['site'],
                     author=config['author'])
         for x in list(reversed(self.idx['idx']))[:10]:
-            if 'draft' in self.idx[x] and self.idx[x]['draft']:
-                continue
             page = MarkDownEntry(x)
             feed.add(title=self.idx[x]['title'],
                  content=page.content,
@@ -270,6 +271,95 @@ def entry(page=current_date, overwrite=False, edit=False):
         sys.stdout.write(fullpath + '\n')
     return
 
+@baker.command(
+    shortopts={
+            "source": "s"},
+    params={"source":         "source from config or url",}
+    )
+def source(source=None):
+    def fill_template(links):
+        return \
+            '# Title\n\n' +               '\n'.join(links['other']) + \
+            '\n-----\n\n## Для всех\n\n' +'\n'.join(links['1'])+ \
+            '\n\n## На грани\n\n' +       '\n'.join(links['2']) + \
+            '\n\n## Для гиков\n\n' +      '\n'.join(links['3']) + \
+            '\n\n## Разное\n\n' +        '\n'.join(links['4']) + '\n\n'
+
+    if source == None:
+        source = sorted(config['sources'].keys())[0]
+    if '://' in source:
+        url = source
+    else:
+        url = config['sources'][source]
+
+    import feedparser
+    sys.stderr.write('Fetching from ' + url + '\n')
+    feed = feedparser.parse(urllib.request.urlopen(url).read())
+    res = {'1': [], '2': [], '3': [], '4': [], 'other': []}
+    for entry in feed.entries:
+        tags = entry['tags'][0]['term'].split(' ') if entry.get('tags', False) else []
+        t_in = 'other'
+        for x in tags:
+            if x in res:
+                t_in = x
+                break
+        item =  '* [' + entry['title'] + '](' + entry['link'] + ') '
+        if 'summary' in entry:
+            item += entry['summary']
+        if tags:
+            item += ' {'
+            item += '} {'.join( (x for x in tags if x not in res) )
+            item += '}'
+        res[t_in].append(item)
+    return fill_template(res)
+
+@baker.command(
+    shortopts={
+            "page": "p",
+            "fetch": "F"},
+    params={"page":         "page name",
+            "fetch": "fetch draft from default source"}
+    )
+
+def draft(page=current_date, fetch = False):
+    """create and edit draft"""
+    path = config['local']['drafts']
+    page = get_true_page(page)
+
+    fullpath = os.path.join(path, page + '.md')
+    template = '# Title\n\n-----\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n'
+    if fetch:
+        template = source()
+    if not os.path.isfile(fullpath):
+        with saveto(fullpath) as fl:
+            fl.write(template)
+    sys.stdout.write(fullpath + '\n')
+    os.system(config['local']['editor'] % fullpath)
+    return
+
+@baker.command(
+    shortopts={
+            "page": "p"},
+    params={"page":         "page name",}
+    )
+def publish(page=current_date):
+    """publish draft to usual post"""
+    srce_path = config['local']['drafts']
+    dest_path = config['local']['posts']
+    page = get_true_page(page)
+
+    s_fullpath = os.path.join(srce_path, page + '.md')
+    d_fullpath = os.path.join(dest_path, page + '.md')
+    if not os.path.isfile(s_fullpath):
+        sys.stderr.write('Draft `' + page + "' not found\n")
+        return
+    if os.path.isfile(d_fullpath):
+        sys.stderr.write('Draft `' + page + "' cannot be unpublished because this page already on air\n")
+        return
+    shutil.move(s_fullpath, d_fullpath)
+    sys.stdout.write('Page `' + page + "' published\n")
+    return
+
 
 @baker.command
 def show(page=current_date):
@@ -296,33 +386,29 @@ def gen(page=current_date, force=False):
             if page in idx and os.path.getmtime(fpath) <= idx[page]['cdate']:
                 return
     entry = MarkDownEntry(page)
-    if entry.draft:
-        sys.stdout.write('Page ' + page + ' drafted.\n')
-    else:
-        with Index(ro=True) as idx:
-            if page not in idx['idx']:
+    with Index(ro=True) as idx:
+        if page not in idx['idx']:
+            entry.is_index = True
+        else:
+            last = None
+            for x in reversed(idx['idx']):
+                if 'draft' not in idx[x] or idx[x]['draft'] == False:
+                    last = x
+                    break
+            if last == page:
                 entry.is_index = True
-            else:
-                last = None
-                for x in reversed(idx['idx']):
-                    if 'draft' not in idx[x] or idx[x]['draft'] == False:
-                        last = x
-                        break
-                if last == page:
-                    entry.is_index = True
-        entry.do(config['local']['templates']['post'])
-        sys.stdout.write('File %s writen\n' % entry.result)
-        if entry.is_index:
-            entry.do_to(config['local']['templates']['post'],
-                        config['local']['results']['path'] + 'index.html')
-            sys.stdout.write('Page ' + page + ' also is index\n')
+    entry.do(config['local']['templates']['post'])
+    sys.stdout.write('File %s writen\n' % entry.result)
+    if entry.is_index:
+        entry.do_to(config['local']['templates']['post'],
+                    config['local']['results']['path'] + 'index.html')
+        sys.stdout.write('Page ' + page + ' also is index\n')
     with Index() as idx:
         idx[page] = dict(
             permalink=entry.permalink,
             title=entry.title,
             cdate=entry.cdate,
             fdate=entry.fdate,
-            draft=entry.draft,
         )
         if page not in idx['idx']:
             idx['idx'].append(page)
@@ -343,6 +429,14 @@ def feed():
     f.do()
     sys.stdout.write('Atom feed ' + f.results + ' saved\n')
 
+@baker.command
+def regenCSS():
+    '''regen .less files to style.css'''
+    cwd = os.getcwd()
+    os.chdir(config['local']['templates']['path'] + 'bootstrap/less')
+    os.system("lessc -x style.less | gzip -c -9 > " + \
+                cwd + '/' + config['local']['results']['path'] + 'style.css')
+    os.chdir(cwd)
 
 @baker.command(
     shortopts={
@@ -363,6 +457,7 @@ def regen(wipe=False, force=False, noindex=False, andsync=False):
     for item in os.listdir(config['local']['posts']):
         gen(page=item, force=force)
     if not noindex:
+        regenCSS()
         archive()
         feed()
     if andsync:
@@ -374,8 +469,9 @@ def sync():
     """syncronize results tree with s3 server"""
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
-    os.system("s3cmd --no-preserve --recursive --exclude=feed sync * " + config['s3']['bucket'])
-    os.system("s3cmd --no-preserve -m 'text/xml' put feed " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --recursive --exclude=feed --exclude=style.css sync * " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve -m 'text/xml' sync feed " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --add-header=Content-Encoding:gzip sync style.css " + config['s3']['bucket'])
     os.chdir(cwd)
 
 
