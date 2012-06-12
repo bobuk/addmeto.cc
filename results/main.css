@@ -1,5 +1,5 @@
 body {
-	width:890px;
+	max-width:890px;
 	margin:auto;
 	padding:30px;
 }
@@ -50,7 +50,7 @@ nav li {
 }
 
 #blarticle {
-	font-family:sans-serif;
+	font-family: HelveticaNeue, Helvetica, sans-serif;
 	text-indent:2px;
 	text-align:justify;
 	padding-top:2em;
@@ -84,6 +84,26 @@ nav li {
 	margin-bottom:1.5px;
 }
 
+#committers {
+	font-size:1.6em;
+	font-family:Philosopher;
+    margin-bottom: 1em;
+}
+
+.committer {
+	margin-left:1em;
+	vertical-align:middle;
+}
+
+#committers a {
+	color:#000000;
+	text-decoration:none;
+}
+
+#committers a:visited {
+	color:#000000;
+}
+
 #blarticle a {
 	color:#740103;
 	text-decoration:none;
@@ -98,7 +118,110 @@ nav li {
 	list-style-type:hebrew;
 }
 
-#kitty {
-	float:right;
+#hypercomments_widget {
+    max-width: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling:touch;
 }
 
+a {
+  color: #0088cc;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #005580;
+  text-decoration: underline;
+}
+
+/* LANDSCAPE PHONE TO SMALL DESKTOP & PORTRAIT TABLET */
+
+@media (max-width: 780px) {
+
+	/* Padding to set content in a bit */
+	body {
+		width: auto;
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+
+	header {
+		position: relative; /* for kitty */
+	}
+
+	#headertext {
+		font-size:1.95em;
+		display: block;
+	}
+
+	#headertext>a {
+		display: block;
+	}
+
+	nav {
+		font-size:0.5em;
+		padding-left:0;
+	}
+
+	nav li {
+		padding-right: 1em;
+	}
+
+	/* make nav link bigger for fingers */
+	nav li a {
+		display: inline-block;
+		height:50px;
+		line-height:50px;
+	}
+
+	#blarticle {
+		padding-top: 0;
+		text-align: left;
+	}
+
+	#blarticle h1 {
+		font-size: 1.5em;
+		margin-bottom: 1em;
+	}
+
+	/* scale and center article graphics */
+	#blarticle img {
+		max-width: 100%;
+		display: block;
+		clear: both;
+		float: none;
+		margin: 1.25em auto;
+	}
+
+	#blarticle h2, #blarticle h3 {
+		margin-top: 1.5em
+	}
+
+	#blarticle ul {
+		padding-left: 1.5em;
+	}
+
+	.kittycheck-cat {
+		top: -50px; /* kitty is lying on hr */
+	}
+
+	#committers > a {
+		margin:0.5em;
+		display: block;
+	}
+
+	.committer {
+		display: block;
+		margin-top:0.05em;
+		clear:both;
+		float:none;
+	}
+
+	#committers + div > * {
+		display: block;
+		padding:0.5em;
+		width: 280px;
+		margin: 0 auto !important;
+		text-align:center;
+	}
+}

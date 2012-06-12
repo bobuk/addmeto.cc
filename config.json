@@ -11,8 +11,9 @@
            "post": "source/templates/index.mustache",
            "archive": "source/templates/archive.mustache"
         },
-        "editor": "open -a /Applications/Valletta.app '%s'",
+        "editor": "open -a /Applications/Byword.app '%s'",
         "posts": "source/posts/",
+        "drafts": "source/drafts/",
         "results": {
            "path": "results/",
            "posts": "results/post/",
@@ -25,5 +26,8 @@
     },
     "s3": {
         "bucket": "s3://addmeto.cc/"
+    },
+    "sources" : {
+        "pinboard": "http://feeds.pinboard.in/rss/secret:3f9b2d260188a5b9849f/u:bobuk/toread/"
     }
 }
