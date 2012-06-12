@@ -154,6 +154,7 @@ class MarkDownEntry(Entry):
 
     def commiters(self):
         res = ""
+        return res
         com = getCommiters(self.page)
         for x in com:
             committer = x['committer']
@@ -434,7 +435,8 @@ def regenCSS():
     '''regen .less files to style.css'''
     cwd = os.getcwd()
     os.chdir(config['local']['templates']['path'] + 'bootstrap/less')
-    os.system("lessc -x style.less | gzip -c -9 > " + \
+    #os.system("lessc -x style.less | gzip -c -9 > " + \
+    os.system("lessc -x style.less  > " + \
                 cwd + '/' + config['local']['results']['path'] + 'style.css')
     os.chdir(cwd)
 
