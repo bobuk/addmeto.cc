@@ -9,8 +9,8 @@
     <meta name="description" content="Бобук Еще один линкблог, add me to cc!" >
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="/style.css">
-	<script src="/js/libs/modernizr-2.5.3-respond-1.1.0.min.js"></script>
-
+	<script type="text/javascript" src="/js/libs/modernizr-2.5.3-respond-1.1.0.min.js"></script>
+    <script type="text/javascript" src="/js/libs/Markdown.Converter.js"></script>
     <link rel="alternate" type="application/rss+xml" title="RSS" href="http://addmeto.cc/feed" >
     <link href="http://fonts.googleapis.com/css?family=Philosopher&subset=cyrillic" rel="stylesheet" type="text/css" >
     <title>{{ title }}</title>
@@ -62,7 +62,7 @@
     <div class="container">
       <article>
         <a href="{{ permalink }}" style="color:#000000; " ><h1>{{ title }}</h1></a>
-        {{& content }}
+        <div id="article-body">{{& content }}</div>
       </article>
 
       <hr>
