@@ -2,6 +2,7 @@
 results/archive/
 results/feed
 results/index.html
-results/post/
+results/post/*/*.md
+results/*.md
 results/style.css
 results/js/script.js
