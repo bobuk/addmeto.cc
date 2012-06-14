@@ -10,7 +10,7 @@
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" href="/style.css">
 	<script type="text/javascript" src="/js/libs/modernizr-2.5.3-respond-1.1.0.min.js"></script>
-    <script type="text/javascript" src="/js/libs/Markdown.Converter.js"></script>
+    <!--script type="text/javascript" src="/js/libs/Markdown.Converter.js"></script!-->
     <link rel="alternate" type="application/rss+xml" title="RSS" href="http://addmeto.cc/feed" >
     <link href="http://fonts.googleapis.com/css?family=Philosopher&subset=cyrillic" rel="stylesheet" type="text/css" >
     <title>{{ title }}</title>
@@ -62,22 +62,23 @@
     <div class="container">
       <article>
         <a href="{{ permalink }}" style="color:#000000; " ><h1>{{ title }}</h1></a>
-        <div id="article-body">{{& content }}</div>
+        <div id="article-body">{{& html }}</div>
+        <pre id="article-md" style="display: none" contentEditable=true>& markdown</pre>
       </article>
 
       <hr>
-<div id="committers" ><a href="https://github.com/bobuk/addmeto.cc/blob/master/source/posts/{{ page }}.md" class="btn" style="height: 19px; margin-bottom: 2px;">ЗаGitHubить!</a><iframe allowtransparency="true" src="https://money.yandex.ru/embed/small.xml?uid=4100130214808&amp;button-text=01&amp;button-size=s&amp;button-color=white&amp;targets=%d0%a1%d0%bf%d0%b0%d1%81%d0%b8%d0%b1%d0%be&amp;default-sum=100&amp;mail=on" frameborder="0" height="31" scrolling="no" width="130" style="display:table-cell;vertical-align:bottom;"></iframe></div>
-<div id="hypercomments_widget"></div><script type="text/javascript">
+<table id="committers" ><tr><td><a href="https://github.com/bobuk/addmeto.cc/blob/master/source/posts/{{ page }}.md" class="btn" style="height: 19px; margin-bottom: 2px;">ЗаGitHubить!</a></td><td><iframe allowtransparency="true" src="https://money.yandex.ru/embed/small.xml?uid=4100130214808&amp;button-text=01&amp;button-size=s&amp;button-color=white&amp;targets=%d0%a1%d0%bf%d0%b0%d1%81%d0%b8%d0%b1%d0%be&amp;default-sum=100&amp;mail=on" frameborder="0" height="31" scrolling="no" width="130" style="display:table-cell;vertical-align:bottom;"></iframe></td><td><button id="edit-btn"  data-toggle="button" data-loading-text="загрузка..." class="btn btn-primary">Редактировать</button></td></tr></table>
+<!--div id="hypercomments_widget"></div><script type="text/javascript">
 var _hcp = _hcp || {};
 _hcp.widget_id = 659;_hcp.widget = "Stream";_hcp.lang='ru';_hcp.xid = '{{ permalink }}';
 (function() {
 var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
 hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
 var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
-})();</script>
+})();</script-->
 
       <footer>
-        <p>&copy; Григорий Бакунов 2012</p>
+        <p id="edit">&copy; Григорий Бакунов 2012</p>
       </footer>
 
     </div> <!-- /container -->
@@ -85,7 +86,7 @@ var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hc
 <script>window.jQuery || document.write('<script src="/js/libs/jquery-1.7.2.js"><\/script>')</script>
 
 <script src="/js/libs/bootstrap/bootstrap.min.js"></script>
-
+<script>var page = '{{ page }}';</script>
 <script src="/js/script.js"></script>
 </body>
 </html>
