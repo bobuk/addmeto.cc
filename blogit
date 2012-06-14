@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timedelta
 import re, shutil
 import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
-
+import functools
 import pystache
 import baker
 import markdown2 as markdown
@@ -30,15 +30,17 @@ def saveto(fres):
         os.makedirs(dname)
     except:
         pass
+    sys.stdout.write('.'); sys.stdout.flush()
+    # sys.stdout.write('File %s writing\n' % fres)
     return open(fres, 'w')
 
 
 def tags_cludge(tag):
     c = tag.group(1)
     if c == '*':
-        tag = '<b style="font-size: 1.6em; color: yellow;">✭</b>'
+        tag = ' <b style="font-size: 1.6em; color: #fff;">✭</b>'
     else:
-        tag = "<small>#" + c + "</small>"
+        tag = " <small>#" + c + "</small>"
     return tag
 
 
@@ -46,24 +48,27 @@ def makeHtml(inbound):
     res = []
     for line in inbound.split('\n'):
         line = line.strip()
-        if line.startswith('>>') and line.endswith('<<'):
-            line = line[2:-2].strip()
-            if line.startswith('!['):
-                # inline image!
-                tp, url = line[2:-1].split('](')
-                if tp == 'center':
-                    line = '<div style="text-align: center"><img src="' + \
-                    url + \
-                    '" style="float: none" /></div>'
-            else:
-                raise Error('Unknown inline')
         res.append(line)
     res = '\n'.join(res)
+    res = re.sub(' \#([a-zA-Z0-9\*]+)', tags_cludge, res)
+    html =  markdown.markdown(res)
 
-    res = res # markdown.markdown(res, extras=["cuddled-lists"])
+    return html
 
-    res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
-    return res
+def extract_numbers(s):
+    s = s.replace('.md', '')
+    num = ''.join((x for x in s if x.isdigit()))
+    alpha = ''.join((x for x in s if x.isalpha()))
+    return num + '-' + alpha
+
+def _perversed_sort(x,y):
+    x = extract_numbers(x)
+    y = extract_numbers(y)
+    return -1 if x > y else 1 if x < y else 0
+
+def perversed(vd):
+    "Sort dictionary in my own way, aha"
+    return sorted(vd, key=functools.cmp_to_key(_perversed_sort))
 
 class Index(dict):
     def __init__(self, filename=None, ro=False, *args, **kwds):
@@ -122,19 +127,7 @@ class Entry:
 
 class MarkDownEntry(Entry):
     def parse(self):
-        if self.content.startswith('---'):
-            headers, rest = self.content[3:].split('---', 1)
-            self.headers = {}
-            for key, value in (line.strip().split(': ', 1)
-                                for line in headers.split('\n')
-                                        if not line.startswith('#') and ':' in line):
-                self.headers[key.lower()] = value
-            self.content = rest
-            if 'title' in self.headers:
-                self.title = self.headers['title']
-            if 'date' in self.headers:
-                self.fdate = self.headers['date']
-        elif self.content.startswith('# '):
+        if self.content.startswith('# '):
             title, rest = self.content.split('\n', 1)
             hashmash, self.title = title.split(' ', 1)
             self.content = rest
@@ -142,9 +135,9 @@ class MarkDownEntry(Entry):
             title, rest = self.content.split('\n', 1)
             self.title = title
             self.content = rest
-        self.content = makeHtml(self.content)
+        self.html = makeHtml(self.content)
         self.result = os.path.join(config['local']['results']['posts'],
-                                                 self.page, 'index.html')
+                                                 self.page + '/')
         self.permalink = config['site'] + config['local']['results']['site'] + self.page
 
     def do(self, template):
@@ -155,12 +148,15 @@ class MarkDownEntry(Entry):
             {
                 'conf': config, 'title': self.title,
                 'cdate': self.cdate, 'fdate': self.fdate,
-                'content': self.content, #.replace('\n', ' '),
+                'html': self.html.replace('\n', ' '),
+                'markdown': self.content,
                 'page': self.page,
                 'permalink': self.permalink
             })
-        with saveto(fpath) as fl:
+        with saveto(fpath + 'index.html') as fl:
             fl.write(res)
+        with saveto(fpath + self.page + '.md') as fl:
+            fl.write(self.content)
 
 
 class Archive:
@@ -170,7 +166,7 @@ class Archive:
 
     def do(self, template):
         items = []
-        for x in reversed(self.idx['idx']):
+        for x in perversed(self.idx['idx']):
             items.append({
                 'fname': self.idx[x]['permalink'],
                 'subtitle': self.idx[x]['title'],
@@ -196,10 +192,10 @@ class RSS:
                     feed_url=config['site'] + "feed",
                     url=config['site'][:-1] if config['site'].endswith('/') else config['site'],
                     author=config['author'])
-        for x in list(reversed(self.idx['idx']))[:10]:
+        for x in list(perversed(self.idx['idx']))[:10]:
             page = MarkDownEntry(x)
             feed.add(title=self.idx[x]['title'],
-                 content=page.content,
+                 content=page.html,
                  content_type="html",
                  author=config['author'],
                  url=self.idx[x]['permalink'],
@@ -332,7 +328,7 @@ def publish(page=current_date):
         sys.stderr.write('Draft `' + page + "' cannot be unpublished because this page already on air\n")
         return
     shutil.move(s_fullpath, d_fullpath)
-    sys.stdout.write('Page `' + page + "' published\n")
+    sys.stdout.write('\nPage `' + page + "' published\n")
     return
 
 
@@ -366,18 +362,16 @@ def gen(page=current_date, force=False):
             entry.is_index = True
         else:
             last = None
-            for x in reversed(idx['idx']):
+            for x in perversed(idx['idx']):
                 if 'draft' not in idx[x] or idx[x]['draft'] == False:
                     last = x
                     break
             if last == page:
                 entry.is_index = True
     entry.do(config['local']['templates']['post'])
-    sys.stdout.write('File %s writen\n' % entry.result)
     if entry.is_index:
         entry.do_to(config['local']['templates']['post'],
-                    config['local']['results']['path'] + 'index.html')
-        sys.stdout.write('Page ' + page + ' also is index\n')
+                    config['local']['results']['path'])
     with Index() as idx:
         idx[page] = dict(
             permalink=entry.permalink,
@@ -394,7 +388,6 @@ def archive():
     '''regen /arhive page'''
     f = Archive(Index(ro=True))
     f.do(config['local']['templates']['archive'])
-    sys.stdout.write('Archive ' + f.results + ' saved\n')
 
 
 @baker.command
@@ -402,7 +395,6 @@ def feed():
     '''regen /feed page'''
     f = RSS(Index(ro=True))
     f.do()
-    sys.stdout.write('Atom feed ' + f.results + ' saved\n')
 
 @baker.command
 def regenCSS():
@@ -443,6 +435,7 @@ def regen(wipe=False, force=False, noindex=False, andsync=False):
 @baker.command
 def sync():
     """syncronize results tree with s3 server"""
+    sys.exit(-10)
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
     os.system("s3cmd --no-preserve --recursive --exclude=feed --exclude=style.css sync * " + config['s3']['bucket'])
@@ -465,3 +458,4 @@ def server(port=8000):
     os.chdir(cwd)
 
 baker.run()
+sys.stdout.write('\n')
