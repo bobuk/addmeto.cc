@@ -4,7 +4,7 @@ sys.path.insert(0, 'libs/')
 import os
 import json
 from datetime import datetime, timedelta
-import re, shutil
+import re, shutil, gzip
 import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
 
 import pystache
@@ -24,13 +24,13 @@ def loadConfigs(path=os.getcwd()):
 config = loadConfigs()
 
 
-def saveto(fres):
+def saveto(fres, addflag = ''):
     dname = os.path.dirname(fres)
     try:
         os.makedirs(dname)
     except:
         pass
-    return open(fres, 'w')
+    return open(fres, 'w' + addflag)
 
 
 def tags_cludge(tag):
@@ -207,8 +207,9 @@ class RSS:
                  url=self.idx[x]['permalink'],
                  updated=datetime.fromtimestamp(self.idx[x]['cdate'])
             )
-        with saveto(self.results) as fl:
-            fl.write(feed.to_string())
+        feedout = gzip.compress(bytes(feed.to_string(), 'utf-8'))
+        with saveto(self.results, 'b') as fl:
+            fl.write( feedout )
 
 def get_true_page(page = current_date):
     if 'yesterday' in page:
@@ -395,7 +396,7 @@ def sync():
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
     os.system("s3cmd --no-preserve --recursive --exclude=feed --exclude=style.css sync * " + config['s3']['bucket'])
-    os.system("s3cmd --no-preserve -m 'text/xml' sync feed " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --add-header=Content-Encoding:gzip sync -m 'text/xml' sync feed " + config['s3']['bucket'])
     os.system("s3cmd --no-preserve --add-header=Content-Encoding:gzip sync style.css " + config['s3']['bucket'])
     os.chdir(cwd)
 
