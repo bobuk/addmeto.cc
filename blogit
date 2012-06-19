@@ -62,6 +62,7 @@ def makeHtml(inbound):
 
     res = markdown.markdown(res, extras=["cuddled-lists"])
 
+    res = re.sub(' \#([a-zA-Z0-9\*]+)', tags_cludge, res)
     res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
     return res
 
