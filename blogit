@@ -426,12 +426,10 @@ def server(port=8000):
     import socketserver
     class GzippedResourcesAwareHandler(http.server.SimpleHTTPRequestHandler):
         def do_GET(self):
-            if self.path == '/style.css'\
-                or self.path == '/feed':
+            if self.path in ['/style.css', '/feed']:
                     self.send_header("Content-Encoding", "gzip")
             super(GzippedResourcesAwareHandler, self).do_GET()
-    Handler = GzippedResourcesAwareHandler
-    httpd = socketserver.TCPServer(("", port), Handler)
+    httpd = socketserver.TCPServer(("", port), GzippedResourcesAwareHandler)
     print("serving at port", port)
     httpd.serve_forever()
     os.chdir(cwd)
