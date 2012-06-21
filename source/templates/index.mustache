@@ -14,6 +14,7 @@
     <link rel="alternate" type="application/rss+xml" title="RSS" href="http://addmeto.cc/feed" >
     <link href="http://fonts.googleapis.com/css?family=Philosopher&subset=cyrillic" rel="stylesheet" type="text/css" >
     <title>{{ title }}</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 
     <meta name="kittycheck_site_uniq_id" content="addmeto-cc-{{ page }}" />
     <meta name="kittycheck_position" content="top=60,right=30" />
@@ -58,7 +59,29 @@
         </div>
       </div>
     </div>
-
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_floating_style addthis_32x32_style" style="left:30px;top:80px;">
+<a class="addthis_button_facebook"></a>
+<a class="addthis_button_twitter"></a>
+<a class="addthis_button_vk"></a>
+<a class="addthis_button_email"></a>
+<a class="addthis_button_compact"></a>
+</div>
+<script type="text/javascript">
+    var addthis_share = {
+        url: '{{ permalink }}',
+        templates: {
+            twitter: 'В блоге @bobuk сегодня "{{ title }}" {{ permalink }}',
+        }
+    }
+</script>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4fde352912ffa6c6"></script>
+<script>
+if ($(document).width() < 1000) {
+    $('.addthis_toolbox').hide()
+}
+</script>
+<!-- AddThis Button END -->
     <div class="container">
       <article>
         <a href="{{ permalink }}" style="color:#000000; " ><h1>{{ title }}</h1></a>
@@ -66,7 +89,7 @@
       </article>
 
       <hr>
-<div id="committers" ><a href="https://github.com/bobuk/addmeto.cc/blob/master/source/posts/{{ page }}.md" class="btn" >ЗаGitHubить!</a> {{{ committers }}}</div>
+<table id="committers" ><tr><td><a href="https://github.com/bobuk/addmeto.cc/blob/master/source/posts/{{ page }}.md" class="btn" style="height: 19px; margin-bottom: 2px;">ЗаGitHubить!</a></td><td><iframe allowtransparency="true" src="https://money.yandex.ru/embed/small.xml?uid=4100130214808&amp;button-text=01&amp;button-size=s&amp;button-color=white&amp;targets=%d0%a1%d0%bf%d0%b0%d1%81%d0%b8%d0%b1%d0%be&amp;default-sum=100&amp;mail=on" frameborder="0" height="31" scrolling="no" width="130" style="display:table-cell;vertical-align:bottom;"></iframe></td></tr></table>
 <div id="hypercomments_widget"></div><script type="text/javascript">
 var _hcp = _hcp || {};
 _hcp.widget_id = 659;_hcp.widget = "Stream";_hcp.lang='ru';_hcp.xid = '{{ permalink }}';
@@ -81,7 +104,6 @@ var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hc
       </footer>
 
     </div> <!-- /container -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 <script>window.jQuery || document.write('<script src="/js/libs/jquery-1.7.2.js"><\/script>')</script>
 
 <script src="/js/libs/bootstrap/bootstrap.min.js"></script>

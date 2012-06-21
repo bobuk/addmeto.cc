@@ -4,7 +4,7 @@ sys.path.insert(0, 'libs/')
 import os
 import json
 from datetime import datetime, timedelta
-import re, shutil
+import re, shutil, gzip, functools
 import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
 
 import pystache
@@ -15,11 +15,6 @@ from pyatom import AtomFeed
 current_date = datetime.now().strftime('%Y-%m-%d')
 daydelta = timedelta(days=1)
 
-def getCommiters(path):
-    url = 'https://api.github.com/repos/bobuk/addmeto.cc/commits?path=source/posts/' \
-            +  path +'.md' # + '&callback=github'
-    return urlopen(url)
-
 def loadConfigs(path=os.getcwd()):
     fname = os.path.join(path, 'config.json')
     if not os.path.isfile(fname):
@@ -29,13 +24,13 @@ def loadConfigs(path=os.getcwd()):
 config = loadConfigs()
 
 
-def saveto(fres):
+def saveto(fres, addflag = ''):
     dname = os.path.dirname(fres)
     try:
         os.makedirs(dname)
     except:
         pass
-    return open(fres, 'w')
+    return open(fres, 'w' + addflag)
 
 
 def tags_cludge(tag):
@@ -67,8 +62,25 @@ def makeHtml(inbound):
 
     res = markdown.markdown(res, extras=["cuddled-lists"])
 
+    res = re.sub(' \#([a-zA-Z0-9\*]+)', tags_cludge, res)
     res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
     return res
+
+def extract_numbers(s):
+    s = s.replace('.md', '')
+    num = ''.join((x for x in s if x.isdigit()))
+    alpha = ''.join((x for x in s if x.isalpha()))
+    return num + '-' + alpha
+
+def _perversed_sort(x,y):
+    x = extract_numbers(x)
+    y = extract_numbers(y)
+    return -1 if x > y else 1 if x < y else 0
+
+def perversed(vd):
+    "Sort dictionary in my own way, aha"
+    return sorted(vd, key=functools.cmp_to_key(_perversed_sort))
+
 
 class Index(dict):
     def __init__(self, filename=None, ro=False, *args, **kwds):
@@ -152,26 +164,8 @@ class MarkDownEntry(Entry):
                                                  self.page, 'index.html')
         self.permalink = config['site'] + config['local']['results']['site'] + self.page
 
-    def commiters(self):
-        res = ""
-        com = getCommiters(self.page)
-        for x in com:
-            committer = x['committer']
-            try:
-                c = '<img src="http://gravatar.com/avatar/' + committer['gravatar_id'] + '?s=16"/>'
-            except:
-                c = ''
-                try:
-                    c = '<a class=btn href="' + committer['url'].replace('api.','').replace('/users', '') + '">' + c + committer['login']+ '</a>'
-                except:
-                    pass
-            c = '<span class="committer">' + c + '</span>'
-            res += c
-        res += ''
-        return res
 
     def do(self, template):
-        self.commiters()
         return self.do_to(template, self.result)
 
     def do_to(self, template, fpath):
@@ -180,7 +174,6 @@ class MarkDownEntry(Entry):
                 'conf': config, 'title': self.title,
                 'cdate': self.cdate, 'fdate': self.fdate,
                 'content': self.content.replace('\n', ' '),
-                'committers': self.commiters(),
                 'page': self.page,
                 'permalink': self.permalink
             })
@@ -195,7 +188,7 @@ class Archive:
 
     def do(self, template):
         items = []
-        for x in reversed(self.idx['idx']):
+        for x in perversed(self.idx['idx']):
             items.append({
                 'fname': self.idx[x]['permalink'],
                 'subtitle': self.idx[x]['title'],
@@ -221,7 +214,7 @@ class RSS:
                     feed_url=config['site'] + "feed",
                     url=config['site'][:-1] if config['site'].endswith('/') else config['site'],
                     author=config['author'])
-        for x in list(reversed(self.idx['idx']))[:10]:
+        for x in list(perversed(self.idx['idx']))[:10]:
             page = MarkDownEntry(x)
             feed.add(title=self.idx[x]['title'],
                  content=page.content,
@@ -230,8 +223,9 @@ class RSS:
                  url=self.idx[x]['permalink'],
                  updated=datetime.fromtimestamp(self.idx[x]['cdate'])
             )
-        with saveto(self.results) as fl:
-            fl.write(feed.to_string())
+        feedout = gzip.compress(bytes(feed.to_string(), 'utf-8'))
+        with saveto(self.results, 'b') as fl:
+            fl.write( feedout )
 
 def get_true_page(page = current_date):
     if 'yesterday' in page:
@@ -270,48 +264,6 @@ def entry(page=current_date, overwrite=False, edit=False):
     else:
         sys.stdout.write(fullpath + '\n')
     return
-
-@baker.command(
-    shortopts={
-            "source": "s"},
-    params={"source":         "source from config or url",}
-    )
-def source(source=None):
-    def fill_template(links):
-        return \
-            '# Title\n\n' +               '\n'.join(links['other']) + \
-            '\n-----\n\n## Для всех\n\n' +'\n'.join(links['1'])+ \
-            '\n\n## На грани\n\n' +       '\n'.join(links['2']) + \
-            '\n\n## Для гиков\n\n' +      '\n'.join(links['3']) + \
-            '\n\n## Разное\n\n' +        '\n'.join(links['4']) + '\n\n'
-
-    if source == None:
-        source = sorted(config['sources'].keys())[0]
-    if '://' in source:
-        url = source
-    else:
-        url = config['sources'][source]
-
-    import feedparser
-    sys.stderr.write('Fetching from ' + url + '\n')
-    feed = feedparser.parse(urllib.request.urlopen(url).read())
-    res = {'1': [], '2': [], '3': [], '4': [], 'other': []}
-    for entry in feed.entries:
-        tags = entry['tags'][0]['term'].split(' ') if entry.get('tags', False) else []
-        t_in = 'other'
-        for x in tags:
-            if x in res:
-                t_in = x
-                break
-        item =  '* [' + entry['title'] + '](' + entry['link'] + ') '
-        if 'summary' in entry:
-            item += entry['summary']
-        if tags:
-            item += ' {'
-            item += '} {'.join( (x for x in tags if x not in res) )
-            item += '}'
-        res[t_in].append(item)
-    return fill_template(res)
 
 @baker.command(
     shortopts={
@@ -361,16 +313,6 @@ def publish(page=current_date):
     return
 
 
-@baker.command
-def show(page=current_date):
-    """print out page"""
-    page = get_true_page(page)
-    entry = MarkDownEntry(page)
-    if entry:
-        sys.stdout.write(entry.content.replace('\n', ' '))
-    return
-
-
 @baker.command(
     shortopts={"page":  "p",
                "force": "f"},
@@ -391,7 +333,7 @@ def gen(page=current_date, force=False):
             entry.is_index = True
         else:
             last = None
-            for x in reversed(idx['idx']):
+            for x in perversed(idx['idx']):
                 if 'draft' not in idx[x] or idx[x]['draft'] == False:
                     last = x
                     break
@@ -470,7 +412,7 @@ def sync():
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
     os.system("s3cmd --no-preserve --recursive --exclude=feed --exclude=style.css sync * " + config['s3']['bucket'])
-    os.system("s3cmd --no-preserve -m 'text/xml' sync feed " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --add-header=Content-Encoding:gzip sync -m 'text/xml' sync feed " + config['s3']['bucket'])
     os.system("s3cmd --no-preserve --add-header=Content-Encoding:gzip sync style.css " + config['s3']['bucket'])
     os.chdir(cwd)
 
