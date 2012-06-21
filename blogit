@@ -238,6 +238,58 @@ def get_true_page(page = current_date):
         page = page.rsplit('.', 1)[0]
     return page
 
+
+
+def get_true_entry(page, force, index):
+    fpath = os.path.join(config['local']['posts'], page + '.md')
+
+    with index as idx:
+        if not force:
+            if page in idx and os.path.getmtime(fpath) <= idx[page]['cdate']:
+                return None
+
+    entry = MarkDownEntry(page)
+
+    if page not in idx['idx']:
+        entry.is_index = True
+    else:
+        last = None
+        for x in perversed(idx['idx']):
+            if 'draft' not in idx[x] or idx[x]['draft'] == False:
+                last = x
+                break
+        if last == page:
+            entry.is_index = True
+
+    return entry
+
+def put_to_index(index, entry):
+    page = entry.page
+    index[page] = dict(
+        permalink=entry.permalink,
+        title=entry.title,
+        cdate=entry.cdate,
+        fdate=entry.fdate,
+    )
+
+    if page not in index['idx']:
+        index['idx'].append(page)
+
+def gen_page(page, force, index):
+    page = get_true_page(page)
+    entry = get_true_entry(page, force, index)
+    if not entry:
+        return
+
+    entry.do(config['local']['templates']['post'])
+    sys.stdout.write('File %s written\n' % entry.result)
+    if entry.is_index:
+        entry.do_to(config['local']['templates']['post'],
+                    config['local']['results']['path'] + 'index.html')
+        sys.stdout.write('Page ' + page + ' also is index\n')
+
+    return entry
+
 @baker.command(
     shortopts={
             "overwrite": "o",
@@ -311,58 +363,6 @@ def publish(page=current_date):
     shutil.move(s_fullpath, d_fullpath)
     sys.stdout.write('Page `' + page + "' published\n")
     return
-
-
-def get_true_entry(page, force, index):
-    fpath = os.path.join(config['local']['posts'], page + '.md')
-
-    with index as idx:
-        if not force:
-            if page in idx and os.path.getmtime(fpath) <= idx[page]['cdate']:
-                return None
-
-    entry = MarkDownEntry(page)
-
-    if page not in idx['idx']:
-        entry.is_index = True
-    else:
-        last = None
-        for x in perversed(idx['idx']):
-            if 'draft' not in idx[x] or idx[x]['draft'] == False:
-                last = x
-                break
-        if last == page:
-            entry.is_index = True
-
-    return entry
-
-def put_to_index(index, entry):
-    page = entry.page
-    index[page] = dict(
-        permalink=entry.permalink,
-        title=entry.title,
-        cdate=entry.cdate,
-        fdate=entry.fdate,
-    )
-
-    if page not in index['idx']:
-        index['idx'].append(page)
-
-def gen_page(page, force, index):
-    page = get_true_page(page)
-    entry = get_true_entry(page, force, index)
-    if entry is None:
-        return None
-
-    entry.do(config['local']['templates']['post'])
-    sys.stdout.write('File %s written\n' % entry.result)
-    if entry.is_index:
-        entry.do_to(config['local']['templates']['post'],
-                    config['local']['results']['path'] + 'index.html')
-        sys.stdout.write('Page ' + page + ' also is index\n')
-
-    return entry
-
 
 @baker.command(
     shortopts={"page":  "p",
