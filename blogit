@@ -417,7 +417,8 @@ def regen(wipe=False, force=False, noindex=False, andsync=False):
     cache = Index(ro=True)
     with Index() as idx:
         if wipe:
-            idx['idx'] = cache['idx'] = []
+            idx['idx'] = []
+            cache['idx'] = []
         for item in os.listdir(config['local']['posts']):
             entry = gen_page(page=item, force=force, index=cache)
             if entry:
