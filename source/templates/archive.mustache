@@ -61,12 +61,33 @@
 
     <div class="container">
       <article>
+<form>
+  <input type="text" id="st-search-input" class="st-search-input" />
+</form>
+<div id="st-results-container"></div>
+<script type="text/javascript">
+  var Swiftype = window.Swiftype || {};
+  (function() {
+    Swiftype.key = 'ps9bBtpkLPD4Hx6psQnd';
+    Swiftype.inputElement = '#st-search-input';
+    Swiftype.resultContainingElement = '#st-results-container';
+    Swiftype.attachElement = '#st-search-input';
+    Swiftype.renderStyle = "overlay";
+
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = "//swiftype.com/embed.js";
+    var entry = document.getElementsByTagName('script')[0];
+    entry.parentNode.insertBefore(script, entry);
+  }());
+</script>
+
         <ul>
         {{#items }}
             <li><a href="{{ fname }}">{{ subtitle }}</a></li>
         {{/items }}
         </ul>
-
       </article>
 
       <hr>
