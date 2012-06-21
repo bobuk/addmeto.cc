@@ -429,7 +429,7 @@ def regen(wipe=False, force=False, noindex=False, andsync=False):
     if andsync:
         sync()
 
-        
+
 @baker.command
 def sync():
     """syncronize results tree with s3 server"""
