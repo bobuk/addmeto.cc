@@ -4,7 +4,7 @@ sys.path.insert(0, 'libs/')
 import os
 import json
 from datetime import datetime, timedelta
-import re, shutil, gzip
+import re, shutil, gzip, functools
 import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
 
 import pystache
@@ -65,6 +65,22 @@ def makeHtml(inbound):
     res = re.sub(' \#([a-zA-Z0-9\*]+)', tags_cludge, res)
     res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
     return res
+
+def extract_numbers(s):
+    s = s.replace('.md', '')
+    num = ''.join((x for x in s if x.isdigit()))
+    alpha = ''.join((x for x in s if x.isalpha()))
+    return num + '-' + alpha
+
+def _perversed_sort(x,y):
+    x = extract_numbers(x)
+    y = extract_numbers(y)
+    return -1 if x > y else 1 if x < y else 0
+
+def perversed(vd):
+    "Sort dictionary in my own way, aha"
+    return sorted(vd, key=functools.cmp_to_key(_perversed_sort))
+
 
 class Index(dict):
     def __init__(self, filename=None, ro=False, *args, **kwds):
@@ -172,7 +188,7 @@ class Archive:
 
     def do(self, template):
         items = []
-        for x in reversed(self.idx['idx']):
+        for x in perversed(self.idx['idx']):
             items.append({
                 'fname': self.idx[x]['permalink'],
                 'subtitle': self.idx[x]['title'],
@@ -198,7 +214,7 @@ class RSS:
                     feed_url=config['site'] + "feed",
                     url=config['site'][:-1] if config['site'].endswith('/') else config['site'],
                     author=config['author'])
-        for x in list(reversed(self.idx['idx']))[:10]:
+        for x in list(perversed(self.idx['idx']))[:10]:
             page = MarkDownEntry(x)
             feed.add(title=self.idx[x]['title'],
                  content=page.content,
@@ -317,7 +333,7 @@ def gen(page=current_date, force=False):
             entry.is_index = True
         else:
             last = None
-            for x in reversed(idx['idx']):
+            for x in perversed(idx['idx']):
                 if 'draft' not in idx[x] or idx[x]['draft'] == False:
                     last = x
                     break
