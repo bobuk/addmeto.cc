@@ -358,7 +358,7 @@ def gen_page(page, force, index):
     sys.stdout.write('File %s written\n' % entry.result)
     if entry.is_index:
         entry.do_to(config['local']['templates']['post'],
-                config['local']['results']['path'] + 'index.html')
+                    config['local']['results']['path'] + 'index.html')
         sys.stdout.write('Page ' + page + ' also is index\n')
 
     return entry
