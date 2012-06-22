@@ -38,7 +38,7 @@ def tags_cludge(tag):
     if c == '*':
         tag = '<b style="font-size: 1.6em; color: yellow;">✭</b>'
     else:
-        tag = "<small>#" + c + "</small>"
+        tag = "<small>#" + c + "</small> "
     return tag
 
 
