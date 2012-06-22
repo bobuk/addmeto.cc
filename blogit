@@ -455,13 +455,15 @@ def regenCSS():
             "wipe": "w",
             "force": "f",
             "noindex": "n",
-            "andsync": "s"},
+            "andsync": "s",
+            "sections": "S"},
     params={"wipe":         "wipe out current index",
             "force":    "force regen pages",
             "noindex": "do not regen feed and archives",
-            "andsync": "execute `sync` command right after finish"}
+            "andsync": "execute `sync` command right after finish",
+            "sections": "regen also all static sections"}
     )
-def regen(wipe=False, force=False, noindex=False, andsync=False):
+def regen(wipe=False, force=False, noindex=False, andsync=False, sections=False):
     """regenerate index and all pages"""
     cache = Index(ro=True)
     with Index() as idx:
@@ -472,6 +474,9 @@ def regen(wipe=False, force=False, noindex=False, andsync=False):
             entry = gen_page(page=item, force=force, index=cache)
             if entry:
                 put_to_index(index=idx, entry=entry)
+    if sections:
+        for item in os.listdir(config['local']['section']):
+            entry = gen_section(page=item)
     if not noindex:
         regenCSS()
         archive()
