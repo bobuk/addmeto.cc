@@ -227,7 +227,7 @@ class RSS:
         with saveto(self.results, 'b') as fl:
             fl.write( feedout )
 
-def get_true_page(page = current_date):
+def get_true_page_name(page = current_date):
     if 'yesterday' in page:
         page = page.replace('yesterday', (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'))
     elif 'tomorrow' in page:
@@ -276,7 +276,7 @@ def put_to_index(index, entry):
         index['idx'].append(page)
 
 def gen_page(page, force, index):
-    page = get_true_page(page)
+    page = get_true_page_name(page)
     entry = get_true_entry(page, force, index)
     if not entry:
         return
@@ -301,7 +301,7 @@ def gen_page(page, force, index):
 def entry(page=current_date, overwrite=False, edit=False):
     """create and edit new blog entry"""
     path = config['local']['posts']
-    page = get_true_page(page)
+    page = get_true_page_name(page)
 
     fullpath = os.path.join(path, page + '.md')
     if os.path.isfile(fullpath):
@@ -328,7 +328,7 @@ def entry(page=current_date, overwrite=False, edit=False):
 def draft(page=current_date, fetch = False):
     """create and edit draft"""
     path = config['local']['drafts']
-    page = get_true_page(page)
+    page = get_true_page_name(page)
 
     fullpath = os.path.join(path, page + '.md')
     template = '# Title\n\n-----\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n'
@@ -350,7 +350,7 @@ def publish(page=current_date):
     """publish draft to usual post"""
     srce_path = config['local']['drafts']
     dest_path = config['local']['posts']
-    page = get_true_page(page)
+    page = get_true_page_name(page)
 
     s_fullpath = os.path.join(srce_path, page + '.md')
     d_fullpath = os.path.join(dest_path, page + '.md')
