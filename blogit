@@ -290,7 +290,7 @@ def gen_section(page):
         config['local']['templates']['section'],
         config['local']['results']['path'] + page + '.html'
     )
-    sys.stdout.write('Section ' + page + ' written\n')
+    sys.stdout.write('Section ' + page + '.html written\n')
     return
 
 def gen_page(page, force, index):
@@ -420,7 +420,8 @@ def publish(page=current_date):
 def gen(page=current_date, section=False, force=False):
     """generate a static .html for a page"""
     if section:
-        return gen_section(page)
+        gen_section(page)
+        return
     entry = gen_page(page, force, section, Index(ro=True))
     if entry:
         with Index() as idx:
