@@ -118,11 +118,15 @@ class Index(dict):
 class Entry:
     def __init__(self, page, empty=False):
         self.is_index = False
-        post_path = config['local']['posts']
-        self.fullpath = os.path.join(post_path, page)
+        if '/' in page:
+            self.fullpath = page
+            self.page = os.path.basename(page).split('.')[0]
+        else:
+            self.page = page
+            post_path = config['local']['posts']
+            self.fullpath = os.path.join(post_path, page)
         if '.' not in self.fullpath:
             self.fullpath = self.fullpath + '.md'
-        self.page = page
         self.title = None
         self.cdate = os.path.getmtime(self.fullpath)
         self.fdate = self.cdate
@@ -263,6 +267,7 @@ def get_true_entry(page, force, index):
 
     return entry
 
+
 def put_to_index(index, entry):
     page = entry.page
     index[page] = dict(
@@ -274,6 +279,19 @@ def put_to_index(index, entry):
 
     if page not in index['idx']:
         index['idx'].append(page)
+
+def gen_section(page):
+    page = get_true_page_name(page)
+    fpath = os.path.join(config['local']['section'], page + '.md')
+    entry = MarkDownEntry(fpath)
+    if not entry:
+        return
+    entry.do_to(
+        config['local']['templates']['section'],
+        config['local']['results']['path'] + page + '.html'
+    )
+    sys.stdout.write('Section ' + page + ' written\n')
+    return
 
 def gen_page(page, force, index):
     page = get_true_page_name(page)
@@ -311,6 +329,33 @@ def entry(page=current_date, overwrite=False, edit=False):
     else:
         with saveto(fullpath) as fl:
             fl.write('# Title\n\n-----\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n')
+    if edit:
+        os.system(config['local']['editor'] % fullpath)
+    else:
+        sys.stdout.write(fullpath + '\n')
+    return
+
+@baker.command(
+    shortopts={
+            "overwrite": "o",
+            "edit": "e"},
+    params={"page":         "section name",
+            "overwrite":    "overwrite section even if exists",
+            "edit":         "open text editor if section created"}
+    )
+def section(page, overwrite=False, edit=False):
+    """create and edit new static site section"""
+    path = config['local']['section']
+    page = get_true_page_name(page)
+
+    fullpath = os.path.join(path, page + '.md')
+    if os.path.isfile(fullpath):
+        if not overwrite and not edit:
+            sys.stderr.write('File %s already exists.\n' % fullpath)
+            return
+    else:
+        with saveto(fullpath) as fl:
+            fl.write('# Title\n\n')
     if edit:
         os.system(config['local']['editor'] % fullpath)
     else:
@@ -366,13 +411,17 @@ def publish(page=current_date):
 
 @baker.command(
     shortopts={"page":  "p",
+               "section": "s",
                "force": "f"},
     params={"page":         "page name",
+            "section":      "use section instead of pages",
             "force":    "force regen page"}
 )
-def gen(page=current_date, force=False):
+def gen(page=current_date, section=False, force=False):
     """generate a static .html for a page"""
-    entry = gen_page(page, force, Index(ro=True))
+    if section:
+        return gen_section(page)
+    entry = gen_page(page, force, section, Index(ro=True))
     if entry:
         with Index() as idx:
             put_to_index(idx, entry)
