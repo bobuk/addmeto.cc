@@ -364,21 +364,17 @@ def section(page, overwrite=False, edit=False):
 
 @baker.command(
     shortopts={
-            "page": "p",
-            "fetch": "F"},
-    params={"page":         "page name",
-            "fetch": "fetch draft from default source"}
+            "page": "p"},
+    params={"page":         "page name"}
     )
 
-def draft(page=current_date, fetch = False):
+def draft(page=current_date):
     """create and edit draft"""
     path = config['local']['drafts']
     page = get_true_page_name(page)
 
     fullpath = os.path.join(path, page + '.md')
     template = '# Title\n\n-----\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n'
-    if fetch:
-        template = source()
     if not os.path.isfile(fullpath):
         with saveto(fullpath) as fl:
             fl.write(template)
