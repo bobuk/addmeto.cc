@@ -506,7 +506,7 @@ def server(port=8000):
                     self.send_header("Content-Encoding", "gzip")
             super(GzippedResourcesAwareHandler, self).do_GET()
     httpd = socketserver.TCPServer(("", port), GzippedResourcesAwareHandler)
-    print("serving at port", port)
+    sys.stdout.write("serving at port " + str(port) + '\n')
     httpd.serve_forever()
     os.chdir(cwd)
 
