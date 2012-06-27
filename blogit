@@ -481,6 +481,36 @@ def regen(wipe=False, force=False, noindex=False, andsync=False, sections=False)
     if andsync:
         sync()
 
+@baker.command
+def linkscheck(url = config['site']):
+    """Check for broken links on front page of your site"""
+    import bs4
+    import requests
+    links = \
+        [x for x in \
+            bs4.BeautifulSoup( \
+                requests.get(url).content)\
+            .findAll('a', href=True)
+        if not x['href'].startswith('/')]
+    sys.stdout.write('Found ' + str(len(links)) + ' links. Checking.\n')
+    fails = []
+    for link in links:
+        r = requests.get(link['href'])
+        if r.status_code != 200:
+            fails.append(link['href'])
+            sys.stdout.write('X')
+        else:
+            sys.stdout.write('.')
+        sys.stdout.flush()
+    sys.stdout.write('\n')
+    if fails:
+        sys.stdout.write('We found ' + str(len(fails)) + 'broken links:\n')
+        for link in fails:
+            sys.stdout.write('  ' + link + '\n')
+            sys.exit(-2)
+    else:
+        sys.stdout.write('Everything OK.\n')
+    return
 
 @baker.command
 def sync():
