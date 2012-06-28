@@ -5,7 +5,6 @@ import os
 import json
 from datetime import datetime, timedelta
 import re, shutil, gzip, functools
-import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
 
 import pystache
 import baker
