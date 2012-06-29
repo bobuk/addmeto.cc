@@ -1,1 +1,1 @@
-( )[http://shop.oreilly.com/category/customer-service/dropbox.do]
+Все покупатели электронных книг Издательства O'Reilly могут теперь хранит свои книги на Dropbox. Для этого [войдите в свой аккаунт и включите синхронизацию](http://shop.oreilly.com/category/customer-service/dropbox.do).  [Капитан](http://lurkmore.to/Капитан_Очевидность)  интересуется "почему раньше было по другому ?" 
