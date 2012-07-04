@@ -1,1 +1,3 @@
 Профессор Matthew D. Green [пишет в своем блоге](http://blog.cryptographyengineering.com/2012/06/bad-couple-of-years-for-cryptographic.html) про текущее состояние дел с криптографическими токенами.  Исследователь указывает на то что <del>всё плохо всем ховаться</del> некоторые доступные на рынке устройства уязвимы к целому ряду атак направленных на извлечение ключевой информации. [Пересказ на русском](http://www.pgpru.com/novosti/2012/plohoevremjadljaindustriikriptograficheskihtokenov)
+
+В конце прошлой неделе [Линус](http://en.wikipedia.org/wiki/Linus_Torvalds) выпустил 3.5-rc5. Небольшой [обзор изменений в сетевой подсистеме которые нас ждут в 3.5](http://www.h-online.com/open/features/Kernel-Log-Coming-in-Linux-3-5-Part-1-Networking-1625047.html)
