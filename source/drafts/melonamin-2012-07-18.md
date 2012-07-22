@@ -1,0 +1,7 @@
+* Если вы ничего не слышали о [Continuous_integration](http://en.wikipedia.org/wiki/Continuous_integration), то [вот тут опубликовали](http://zeroturnaround.com/blog/zt-labs-tutorial-pragmatic-continuous-delivery-with-jenkins-nexus-and-liverebel/) неплохой материал для ознакомления. По ссылке есть небольшое видео и PDF (доступен после регистрации, [direct link](http://yadisk.cc/d/mGgANGXS00_z) для ленивых)
+
+* [Доступен для скачивания](http://tfspreview.com) preview TFS - набор инструментов для [управления жизненым циклом ПО](http://en.wikipedia.org/wiki/Application_lifecycle_management) от Microsoft. Из коробки TFS позволяет делать deployment Azure, но что делать если вы используете Amazon EC2? Подробный how-to по [ссылке](http://octopusdeploy.com/blog/automated-deployment-with-tfspreview-octopack-myget)
+
+* Как на самом деле должны были быть сделаны Reminders в iOS - [Checkmark](http://www.macstories.net/reviews/checkmark-review/) А для Android есть что нибудь похожее?
+
+* Автор популярных среди гиков [комиксов XKCD](http://xkcd.com) начал вести блог в котором отвечает на вопросы читателей сформулированных в формате "А что если...". Первый пост про [релятивисткий бейсбол](http://what-if.xkcd.com/1/), формат непривычен, но получилось отлично.
