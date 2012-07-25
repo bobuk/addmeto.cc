@@ -512,6 +512,62 @@ def linkscheck(url = config['site']):
     return
 
 @baker.command
+def mobilepage(page=current_date):
+    """Check for broken links on front page of your site"""
+    import re
+    import requests
+    import json
+    from hashlib import md5
+
+    rx = re.compile('[^!]+\[([^\]]+)\]\(([^\)]+)\)',re.LOCALE|re.UNICODE)
+    path = config['local']['posts']
+    page = get_true_page_name(page)
+
+    fullpath = os.path.join(path, page + '.md')
+    if os.path.isfile(fullpath):
+        links = []
+        fulltext = open(fullpath, 'r').read()
+        appendix = []
+        for line in fulltext.split('\n'):
+            line = line.strip()
+            if line.startswith('!'):
+                continue
+            for c in '[]()':
+                if c not in line:
+                    continue
+            match = rx.findall(line)
+            if not match:
+                continue
+            for (title, url) in match:
+                if 'addmeto.cc' in url:
+                    continue
+                res = json.loads(requests.get('http://shrtdb:5011', params={'url': url}).content.decode('utf-8'))
+                if 'error' in res:
+                    sys.stdout.write('error in '+ url + '\n')
+                    sys.exit(-4)
+                else:
+                    hsh = md5(url.encode('utf-8')).hexdigest()
+                    fulltext = fulltext.replace(url, '#' + hsh)
+                    appendix.append(
+                        '<section id="' + hsh + '"><h1>' + \
+                            res['title'] + '</h1>' + \
+                            res['text'] + \
+                            '<a href="' + url + '">[Original link]</a>' + \
+                        '</section>\n')
+
+        newtext = """<!doctype html>
+            <head>
+                <meta charset='utf-8'>
+            </head><body>""" + makeHtml(fulltext) + ''.join(appendix) + "</body>"
+
+        result = os.path.join(config['local']['results']['posts'],
+                                                 page, 'mobile.html')
+        with open(result, 'w') as fl:
+            fl.write(newtext)
+        sys.stdout.write('Mobile page ' + page + '/mobile.html writen\n')
+
+
+@baker.command
 def sync():
     """syncronize results tree with s3 server"""
     cwd = os.getcwd()
