@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+# coding=utf-8
 import sys
 sys.path.insert(0, 'libs/')
 import os
 import json
 from datetime import datetime, timedelta
 import re, shutil, gzip, functools
+import traceback
 
 import pystache
 import baker
@@ -578,21 +580,70 @@ def sync():
     os.chdir(cwd)
 
 
-@baker.command
-def server(port=8000):
+def listen_dir_changes(path, func):
+    from watchdog.observers import Observer
+    from watchdog.events import LoggingEventHandler
+    from watchdog.events import RegexMatchingEventHandler
+    log_handler = LoggingEventHandler()
+    def delegate(event):
+        log_handler.dispatch(event)
+        func(event)
+    class FuncHandler(RegexMatchingEventHandler):
+        def on_any_event(self, event):
+            super().on_any_event(event)
+            delegate(event)
+    func_handler = FuncHandler(ignore_regexes=[r'.*___jb_...___', r'.*\.index.db', '.*\.bak'],
+        ignore_directories=True)
+    observer = Observer()
+    observer.schedule(func_handler, path, recursive=True)
+    return observer
+
+@baker.command(
+    shortopts={"port": "p",
+               "listen" : "l",
+               "wipe" : "w"},
+    params={"port" : "server port",
+            "listen" : "listens source folder and automatically regenerates blog",
+            "wipe" : "the same as regen -f -w"}
+)
+def server(port=8000, listen=True, wipe=False):
     """run a local http server in results tree"""
     cwd = os.getcwd()
+
+    def with_cwd(fun):
+        _saved_cwd = os.getcwd()
+        try:
+            os.chdir(cwd)
+            fun()
+        except Exception:
+            traceback.print_exc(file=sys.stdout)
+        finally:
+            os.chdir(_saved_cwd)
+
+    _regen = functools.partial(regen, wipe=wipe, force=wipe, noindex=not wipe)
+    if listen and wipe:
+        with_cwd(_regen)
+
     os.chdir(config['local']['results']['path'])
     import http.server
     import socketserver
     class GzippedResourcesAwareHandler(http.server.SimpleHTTPRequestHandler):
         def do_GET(self):
             if self.path in ['/style.css', '/feed']:
-                    self.send_header("Content-Encoding", "gzip")
+                self.send_header("Content-Encoding", "gzip")
             super(GzippedResourcesAwareHandler, self).do_GET()
+
+    if listen:
+        path = os.path.join(cwd, config['local']['source'])
+        observer = listen_dir_changes(path, lambda event: with_cwd(_regen))
+        observer.start()
+
     httpd = socketserver.TCPServer(("", port), GzippedResourcesAwareHandler)
     sys.stdout.write("serving at port " + str(port) + '\n')
     httpd.serve_forever()
+    if observer:
+        observer.stop()
+        observer.join()
     os.chdir(cwd)
 
 baker.run()
