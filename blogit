@@ -630,7 +630,7 @@ def server(port=8000, listen=True, wipe=False):
     class GzippedResourcesAwareHandler(http.server.SimpleHTTPRequestHandler):
         def do_GET(self):
             if self.path in ['/style.css', '/feed']:
-                self.send_header("Content-Encoding", "gzip")
+                    self.send_header("Content-Encoding", "gzip")
             super(GzippedResourcesAwareHandler, self).do_GET()
 
     if listen:
