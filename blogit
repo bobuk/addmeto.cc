@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+# coding=utf-8
 import sys
 sys.path.insert(0, 'libs/')
 import os
 import json
 from datetime import datetime, timedelta
 import re, shutil, gzip, functools
-import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
+import traceback
 
 import pystache
 import baker
@@ -38,8 +39,8 @@ def tags_cludge(tag):
     if c == '*':
         tag = '<b style="font-size: 1.6em; color: yellow;">✭</b>'
     else:
-        tag = "<small>#" + c + "</small> "
-    return tag
+        tag = "<small>#" + c + "</small>"
+    return ' ' + tag
 
 
 def makeHtml(inbound):
@@ -481,6 +482,92 @@ def regen(wipe=False, force=False, noindex=False, andsync=False, sections=False)
     if andsync:
         sync()
 
+@baker.command
+def linkscheck(url = config['site']):
+    """Check for broken links on front page of your site"""
+    import bs4
+    import requests
+    links = \
+        [x for x in \
+            bs4.BeautifulSoup( \
+                requests.get(url).content)\
+            .findAll('a', href=True)
+        if not x['href'].startswith('/')]
+    sys.stdout.write('Found ' + str(len(links)) + ' links. Checking.\n')
+    fails = []
+    for link in links:
+        r = requests.get(link['href'])
+        if r.status_code != 200:
+            fails.append(link['href'])
+            sys.stdout.write('X')
+        else:
+            sys.stdout.write('.')
+        sys.stdout.flush()
+    sys.stdout.write('\n')
+    if fails:
+        sys.stdout.write('We found ' + str(len(fails)) + 'broken links:\n')
+        for link in fails:
+            sys.stdout.write('  ' + link + '\n')
+            sys.exit(-2)
+    else:
+        sys.stdout.write('Everything OK.\n')
+    return
+
+@baker.command
+def mobilepage(page=current_date):
+    """Check for broken links on front page of your site"""
+    import re
+    import requests
+    import json
+    from hashlib import md5
+
+    rx = re.compile('[^!]+\[([^\]]+)\]\(([^\)]+)\)',re.LOCALE|re.UNICODE)
+    path = config['local']['posts']
+    page = get_true_page_name(page)
+
+    fullpath = os.path.join(path, page + '.md')
+    if os.path.isfile(fullpath):
+        links = []
+        fulltext = open(fullpath, 'r').read()
+        appendix = []
+        for line in fulltext.split('\n'):
+            line = line.strip()
+            if line.startswith('!'):
+                continue
+            for c in '[]()':
+                if c not in line:
+                    continue
+            match = rx.findall(line)
+            if not match:
+                continue
+            for (title, url) in match:
+                if 'addmeto.cc' in url:
+                    continue
+                res = json.loads(requests.get('http://shrtdb:5011', params={'url': url}).content.decode('utf-8'))
+                if 'error' in res:
+                    sys.stdout.write('error in '+ url + '\n')
+                    sys.exit(-4)
+                else:
+                    hsh = md5(url.encode('utf-8')).hexdigest()
+                    fulltext = fulltext.replace(url, '#' + hsh)
+                    appendix.append(
+                        '<section id="' + hsh + '"><h1>' + \
+                            res['title'] + '</h1>' + \
+                            res['text'] + \
+                            '<a href="' + url + '">[Original link]</a>' + \
+                        '</section>\n')
+
+        newtext = """<!doctype html>
+            <head>
+                <meta charset='utf-8'>
+            </head><body>""" + makeHtml(fulltext) + ''.join(appendix) + "</body>"
+
+        result = os.path.join(config['local']['results']['posts'],
+                                                 page, 'mobile.html')
+        with open(result, 'w') as fl:
+            fl.write(newtext)
+        sys.stdout.write('Mobile page ' + page + '/mobile.html writen\n')
+
 
 @baker.command
 def sync():
@@ -493,10 +580,50 @@ def sync():
     os.chdir(cwd)
 
 
-@baker.command
-def server(port=8000):
+def listen_dir_changes(path, func):
+    from watchdog.observers import Observer
+    from watchdog.events import LoggingEventHandler
+    from watchdog.events import RegexMatchingEventHandler
+    log_handler = LoggingEventHandler()
+    def delegate(event):
+        log_handler.dispatch(event)
+        func(event)
+    class FuncHandler(RegexMatchingEventHandler):
+        def on_any_event(self, event):
+            super().on_any_event(event)
+            delegate(event)
+    func_handler = FuncHandler(ignore_regexes=[r'.*___jb_...___', r'.*\.index.db', '.*\.bak'],
+        ignore_directories=True)
+    observer = Observer()
+    observer.schedule(func_handler, path, recursive=True)
+    return observer
+
+@baker.command(
+    shortopts={"port": "p",
+               "listen" : "l",
+               "wipe" : "w"},
+    params={"port" : "server port",
+            "listen" : "listens source folder and automatically regenerates blog",
+            "wipe" : "the same as regen -f -w"}
+)
+def server(port=8000, listen=True, wipe=False):
     """run a local http server in results tree"""
     cwd = os.getcwd()
+
+    def with_cwd(fun):
+        _saved_cwd = os.getcwd()
+        try:
+            os.chdir(cwd)
+            fun()
+        except Exception:
+            traceback.print_exc(file=sys.stdout)
+        finally:
+            os.chdir(_saved_cwd)
+
+    _regen = functools.partial(regen, wipe=wipe, force=wipe, noindex=not wipe)
+    if listen and wipe:
+        with_cwd(_regen)
+
     os.chdir(config['local']['results']['path'])
     import http.server
     import socketserver
@@ -505,9 +632,18 @@ def server(port=8000):
             if self.path in ['/style.css', '/feed']:
                     self.send_header("Content-Encoding", "gzip")
             super(GzippedResourcesAwareHandler, self).do_GET()
+
+    if listen:
+        path = os.path.join(cwd, config['local']['source'])
+        observer = listen_dir_changes(path, lambda event: with_cwd(_regen))
+        observer.start()
+
     httpd = socketserver.TCPServer(("", port), GzippedResourcesAwareHandler)
-    print("serving at port", port)
+    sys.stdout.write("serving at port " + str(port) + '\n')
     httpd.serve_forever()
+    if observer:
+        observer.stop()
+        observer.join()
     os.chdir(cwd)
 
 baker.run()

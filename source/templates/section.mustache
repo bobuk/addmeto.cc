@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
@@ -89,7 +89,7 @@ if ($(document).width() < 1000) {
       </article>
 
       <hr>
-<table id="committers" ><tr><td><a href="https://github.com/bobuk/addmeto.cc/blob/master/source/posts/{{ page }}.md" class="btn" style="height: 19px; margin-bottom: 2px;">ЗаGitHubить!</a></td><td><iframe allowtransparency="true" src="https://money.yandex.ru/embed/small.xml?uid=4100130214808&amp;button-text=01&amp;button-size=s&amp;button-color=white&amp;targets=%d0%a1%d0%bf%d0%b0%d1%81%d0%b8%d0%b1%d0%be&amp;default-sum=100&amp;mail=on" frameborder="0" height="31" scrolling="no" width="130" style="display:table-cell;vertical-align:bottom;"></iframe></td></tr></table>
+<table id="committers" ><tr><td><a href="https://github.com/bobuk/addmeto.cc/blob/master/{{#conf}}{{#local}}{{section}}{{/local}}{{/conf}}{{ page }}.md" class="btn" style="height: 19px; margin-bottom: 2px;">ЗаGitHubить!</a></td><td><iframe allowtransparency="true" src="https://money.yandex.ru/embed/small.xml?uid=4100130214808&amp;button-text=01&amp;button-size=s&amp;button-color=white&amp;targets=%d0%a1%d0%bf%d0%b0%d1%81%d0%b8%d0%b1%d0%be&amp;default-sum=100&amp;mail=on" frameborder="0" height="31" scrolling="no" width="130" style="display:table-cell;vertical-align:bottom;"></iframe></td></tr></table>
 <div id="hypercomments_widget"></div><script type="text/javascript">
 var _hcp = _hcp || {};
 _hcp.widget_id = 659;_hcp.widget = "Stream";_hcp.lang='ru';_hcp.xid = '{{ permalink }}';
@@ -109,5 +109,23 @@ var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hc
 <script src="/js/libs/bootstrap/bootstrap.min.js"></script>
 
 <script src="/js/script.js"></script>
+<!-- Start of Woopra Code -->
+<script type="text/javascript">
+function woopraReady(tracker) {
+    tracker.setDomain('addmeto.cc');
+    tracker.setIdleTimeout(60000);
+    tracker.trackPageview({type:'pageview',url:window.location.pathname+window.location.search,title:document.title});
+    return false;
+}
+(function() {
+    var wsc = document.createElement('script');
+    wsc.src = document.location.protocol+'//static.woopra.com/js/woopra.js';
+    wsc.type = 'text/javascript';
+    wsc.async = true;
+    var ssc = document.getElementsByTagName('script')[0];
+    ssc.parentNode.insertBefore(wsc, ssc);
+})();
+</script>
+<!-- End of Woopra Code -->
 </body>
 </html>
