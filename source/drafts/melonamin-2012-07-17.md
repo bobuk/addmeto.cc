@@ -1,1 +1,0 @@
-* Вышел [SourceTree 1.5](http://blog.bitbucket.org/2012/07/17/sourcetree-1-5-going-with-the-flow/),gui git клиент для OS X. Главная фишка новой версии - поддержка [git-flow](http://nvie.com/posts/a-successful-git-branching-model/) 
