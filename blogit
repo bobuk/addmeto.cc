@@ -606,7 +606,8 @@ def listen_dir_changes(path, func):
             "listen" : "listens source folder and automatically regenerates blog",
             "wipe" : "the same as regen -f -w"}
 )
-def server(port=8000, listen=True, wipe=False):
+
+def server(port=8000, listen=False, wipe=False):
     """run a local http server in results tree"""
     cwd = os.getcwd()
 
