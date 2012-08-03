@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+# Copyright (c) 2012 Trent Mick.
 # Copyright (c) 2007-2008 ActiveState Corp.
 # License: MIT (http://www.opensource.org/licenses/mit-license.php)
+
+from __future__ import generators
 
 r"""A fast and complete Python implementation of Markdown.
 
@@ -36,10 +39,15 @@ number of extras (e.g., code syntax coloring, footnotes) as described on
 cmdln_desc = """A fast and complete Python implementation of Markdown, a
 text-to-HTML conversion tool for web writers.
 
-Supported extras (see -x|--extras option below):
+Supported extra syntax options (see -x|--extras option below and
+see <https://github.com/trentm/python-markdown2/wiki/Extras> for details):
+
 * code-friendly: Disable _ and __ for em and strong.
-* code-color: Pygments-based syntax coloring of <code> sections.
 * cuddled-lists: Allow lists to be cuddled to the preceding paragraph.
+* fenced-code-blocks: Allows a code block to not have to be indented
+  by fencing it with '```' on a line before and after. Based on
+  <http://github.github.com/github-flavored-markdown/> with support for
+  syntax highlighting.
 * footnotes: Support footnotes as in use on daringfireball.net and
   implemented in other Markdown processors (tho not in Markdown.pl v1.0.1).
 * header-ids: Adds "id" attributes to headers. The id value is a slug of
@@ -51,6 +59,8 @@ Supported extras (see -x|--extras option below):
   have markdown processing be done on its contents. Similar to
   <http://michelf.com/projects/php-markdown/extra/#markdown-attr> but with
   some limitations.
+* metadata: Extract metadata from a leading '---'-fenced block.
+  See <https://github.com/trentm/python-markdown2/issues/77> for details.
 * pyshell: Treats unindented Python interactive shell sessions as <code>
   blocks.
 * link-patterns: Auto-link given regex patterns in text (e.g. bug number
@@ -66,13 +76,11 @@ Supported extras (see -x|--extras option below):
 """
 
 # Dev Notes:
-# - There is already a Python markdown processor
-#   (http://www.freewisdom.org/projects/python-markdown/).
 # - Python's regex syntax doesn't have '\z', so I'm using '\Z'. I'm
 #   not yet sure if there implications with this. Compare 'pydoc sre'
 #   and 'perldoc perlre'.
 
-__version_info__ = (1, 1, 2)
+__version_info__ = (2, 0, 2)
 __version__ = '.'.join(map(str, __version_info__))
 __author__ = "Trent Mick"
 
@@ -88,22 +96,34 @@ except ImportError:
 import optparse
 from random import random, randint
 import codecs
-from urllib.parse import quote
-
 
 
 #---- Python version compat
+
+try:
+    from urllib.parse import quote # python3
+except ImportError:
+    from urllib import quote # python2
 
 if sys.version_info[:2] < (2,4):
     from sets import Set as set
     def reversed(sequence):
         for i in sequence[::-1]:
             yield i
-    def _unicode_decode(s, encoding, errors='xmlcharrefreplace'):
-        return str(s, encoding, errors)
-else:
-    def _unicode_decode(s, encoding, errors='strict'):
-        return s.decode(encoding, errors)
+
+# Use `bytes` for byte strings and `unicode` for unicode strings (str in Py3).
+if sys.version_info[0] <= 2:
+    py3 = False
+    try:
+        bytes
+    except NameError:
+        bytes = str
+    base_string_type = basestring
+elif sys.version_info[0] >= 3:
+    py3 = True
+    unicode = str
+    base_string_type = str
+
 
 
 #---- globals
@@ -114,21 +134,13 @@ log = logging.getLogger("markdown")
 DEFAULT_TAB_WIDTH = 4
 
 
-try:
-    import uuid
-except ImportError:
-    SECRET_SALT = str(randint(0, 1000000))
-else:
-    SECRET_SALT = str(uuid.uuid4())
-def _hash_ascii(s):
-    #return md5(s).hexdigest()   # Markdown.pl effectively does this.
-    return 'md5-' + md5((SECRET_SALT + s).encode('utf-8')).hexdigest()
+SECRET_SALT = bytes(randint(0, 1000000))
 def _hash_text(s):
-    return 'md5-' + md5((SECRET_SALT + s).encode("utf-8")).hexdigest()
+    return 'md5-' + md5(SECRET_SALT + s.encode("utf-8")).hexdigest()
 
 # Table of hash values for escaped characters:
-g_escape_table = dict([(ch, _hash_ascii(ch))
-                       for ch in '\\`*_{}[]()>#+-.!'])
+g_escape_table = dict([(ch, _hash_text(ch))
+    for ch in '\\`*_{}[]()>#+-.!'])
 
 
 
@@ -218,8 +230,8 @@ class Markdown(object):
 
         self._escape_table = g_escape_table.copy()
         if "smarty-pants" in self.extras:
-            self._escape_table['"'] = _hash_ascii('"')
-            self._escape_table["'"] = _hash_ascii("'")
+            self._escape_table['"'] = _hash_text('"')
+            self._escape_table["'"] = _hash_text("'")
 
     def reset(self):
         self.urls = {}
@@ -233,6 +245,8 @@ class Markdown(object):
             self.footnote_ids = []
         if "header-ids" in self.extras:
             self._count_from_header_id = {} # no `defaultdict` in Python 2.4
+        if "metadata" in self.extras:
+            self.metadata = {}
 
     def convert(self, text):
         """Convert the given text."""
@@ -247,9 +261,9 @@ class Markdown(object):
         # articles):
         self.reset()
 
-        if not isinstance(text, str):
+        if not isinstance(text, unicode):
             #TODO: perhaps shouldn't presume UTF-8 for string input?
-            text = str(text, 'utf-8')
+            text = unicode(text, 'utf-8')
 
         if self.use_file_vars:
             # Look for emacs-style file variable hints.
@@ -282,6 +296,12 @@ class Markdown(object):
         # contorted like /[ \t]*\n+/ .
         text = self._ws_only_line_re.sub("", text)
 
+        # strip metadata from head and extract
+        if "metadata" in self.extras:
+            text = self._extract_metadata(text)
+
+        text = self.preprocess(text)
+
         if self.safe_mode:
             text = self._hash_html_spans(text)
 
@@ -313,6 +333,8 @@ class Markdown(object):
         rv = UnicodeWithAttrs(text)
         if "toc" in self.extras:
             rv._toc = self._toc
+        if "metadata" in self.extras:
+            rv.metadata = self.metadata
         return rv
 
     def postprocess(self, text):
@@ -321,6 +343,38 @@ class Markdown(object):
         unhashing of raw HTML spans.
         """
         return text
+
+    def preprocess(self, text):
+        """A hook for subclasses to do some preprocessing of the Markdown, if
+        desired. This is called after basic formatting of the text, but prior
+        to any extras, safe mode, etc. processing.
+        """
+        return text
+
+    # Is metadata if the content starts with '---'-fenced `key: value`
+    # pairs. E.g. (indented for presentation):
+    #   ---
+    #   foo: bar
+    #   another-var: blah blah
+    #   ---
+    _metadata_pat = re.compile("""^---[ \t]*\n((?:[ \t]*[^ \t:]+[ \t]*:[^\n]*\n)+)---[ \t]*\n""")
+
+    def _extract_metadata(self, text):
+        # fast test
+        if not text.startswith("---"):
+            return text
+        match = self._metadata_pat.match(text)
+        if not match:
+            return text
+
+        tail = text[len(match.group(0)):]
+        metadata_str = match.group(1).strip()
+        for line in metadata_str.split('\n'):
+            key, value = line.split(':', 1)
+            self.metadata[key.strip()] = value.strip()
+
+        return tail
+
 
     _emacs_oneliner_vars_pat = re.compile(r"-\*-\s*([^\r\n]*?)\s*-\*-", re.UNICODE)
     # This regular expression is intended to match blocks like this:
@@ -572,11 +626,11 @@ class Markdown(object):
                 # Delimiters for next comment block.
                 try:
                     start_idx = text.index("<!--", start)
-                except ValueError as ex:
+                except ValueError:
                     break
                 try:
                     end_idx = text.index("-->", start_idx) + 3
-                except ValueError as ex:
+                except ValueError:
                     break
 
                 # Start position for next comment block search.
@@ -720,6 +774,9 @@ class Markdown(object):
     def _run_block_gamut(self, text):
         # These are all the transformations that form block-level
         # tags like paragraphs, headers, and list items.
+
+        if "fenced-code-blocks" in self.extras:
+            text = self._do_fenced_code_blocks(text)
 
         text = self._do_headers(text)
 
@@ -1163,7 +1220,7 @@ class Markdown(object):
             the TOC (if the "toc" extra is specified).
         """
         header_id = _slugify(text)
-        if prefix and isinstance(prefix, str):
+        if prefix and isinstance(prefix, base_string_type):
             header_id = prefix + '-' + header_id
         if header_id in self._count_from_header_id:
             self._count_from_header_id[header_id] += 1
@@ -1176,7 +1233,7 @@ class Markdown(object):
     def _toc_add_entry(self, level, id, name):
         if self._toc is None:
             self._toc = []
-        self._toc.append((level, id, name))
+        self._toc.append((level, id, self._unescape_special_chars(name)))
 
     _setext_h_re = re.compile(r'^(.+)[ \t]*\n(=+|-+)[ \t]*\n+', re.M)
     def _setext_h_sub(self, match):
@@ -1197,7 +1254,7 @@ class Markdown(object):
 
     _atx_h_re = re.compile(r'''
         ^(\#{1,6})  # \1 = string of #'s
-        [ \t]*
+        [ \t]+
         (.+?)       # \2 = Header text
         [ \t]*
         (?<!\\)     # ensure not an escaped trailing '#'
@@ -1257,56 +1314,51 @@ class Markdown(object):
     def _do_lists(self, text):
         # Form HTML ordered (numbered) and unordered (bulleted) lists.
 
-        for marker_pat in (self._marker_ul, self._marker_ol):
-            # Re-usable pattern to match any entire ul or ol list:
-            less_than_tab = self.tab_width - 1
-            whole_list = r'''
-                (                   # \1 = whole list
-                  (                 # \2
-                    [ ]{0,%d}
-                    (%s)            # \3 = first list item marker
-                    [ \t]+
-                    (?!\ *\3\ )     # '- - - ...' isn't a list. See 'not_quite_a_list' test case.
-                  )
-                  (?:.+?)
-                  (                 # \4
-                      \Z
-                    |
-                      \n{2,}
-                      (?=\S)
-                      (?!           # Negative lookahead for another list item marker
-                        [ \t]*
-                        %s[ \t]+
+        # Iterate over each *non-overlapping* list match.
+        pos = 0
+        while True:
+            # Find the *first* hit for either list style (ul or ol). We
+            # match ul and ol separately to avoid adjacent lists of different
+            # types running into each other (see issue #16).
+            hits = []
+            for marker_pat in (self._marker_ul, self._marker_ol):
+                less_than_tab = self.tab_width - 1
+                whole_list = r'''
+                    (                   # \1 = whole list
+                      (                 # \2
+                        [ ]{0,%d}
+                        (%s)            # \3 = first list item marker
+                        [ \t]+
+                        (?!\ *\3\ )     # '- - - ...' isn't a list. See 'not_quite_a_list' test case.
                       )
-                  )
-                )
-            ''' % (less_than_tab, marker_pat, marker_pat)
-
-            # We use a different prefix before nested lists than top-level lists.
-            # See extended comment in _process_list_items().
-            #
-            # Note: There's a bit of duplication here. My original implementation
-            # created a scalar regex pattern as the conditional result of the test on
-            # $g_list_level, and then only ran the $text =~ s{...}{...}egmx
-            # substitution once, using the scalar as the pattern. This worked,
-            # everywhere except when running under MT on my hosting account at Pair
-            # Networks. There, this caused all rebuilds to be killed by the reaper (or
-            # perhaps they crashed, but that seems incredibly unlikely given that the
-            # same script on the same server ran fine *except* under MT. I've spent
-            # more time trying to figure out why this is happening than I'd like to
-            # admit. My only guess, backed up by the fact that this workaround works,
-            # is that Perl optimizes the substition when it can figure out that the
-            # pattern will never change, and when this optimization isn't on, we run
-            # afoul of the reaper. Thus, the slightly redundant code to that uses two
-            # static s/// patterns rather than one conditional pattern.
-
-            if self.list_level:
-                sub_list_re = re.compile("^"+whole_list, re.X | re.M | re.S)
-                text = sub_list_re.sub(self._list_sub, text)
-            else:
-                list_re = re.compile(r"(?:(?<=\n\n)|\A\n?)"+whole_list,
-                                     re.X | re.M | re.S)
-                text = list_re.sub(self._list_sub, text)
+                      (?:.+?)
+                      (                 # \4
+                          \Z
+                        |
+                          \n{2,}
+                          (?=\S)
+                          (?!           # Negative lookahead for another list item marker
+                            [ \t]*
+                            %s[ \t]+
+                          )
+                      )
+                    )
+                ''' % (less_than_tab, marker_pat, marker_pat)
+                if self.list_level:  # sub-list
+                    list_re = re.compile("^"+whole_list, re.X | re.M | re.S)
+                else:
+                    list_re = re.compile(r"(?:(?<=\n\n)|\A\n?)"+whole_list,
+                                         re.X | re.M | re.S)
+                match = list_re.search(text, pos)
+                if match:
+                    hits.append((match.start(), match))
+            if not hits:
+                break
+            hits.sort()
+            match = hits[0][1]
+            start, end = match.span()
+            text = text[:start] + self._list_sub(match) + text[end:]
+            pos = end
 
         return text
 
@@ -1395,23 +1447,35 @@ class Markdown(object):
                 """Return the source with a code, pre, and div."""
                 return self._wrap_div(self._wrap_pre(self._wrap_code(source)))
 
-        formatter = HtmlCodeFormatter(cssclass="codehilite", **formatter_opts)
+        formatter_opts.setdefault("cssclass", "codehilite")
+        formatter = HtmlCodeFormatter(**formatter_opts)
         return pygments.highlight(codeblock, lexer, formatter)
 
-    def _code_block_sub(self, match):
-        codeblock = match.group(1)
-        codeblock = self._outdent(codeblock)
-        codeblock = self._detab(codeblock)
-        codeblock = codeblock.lstrip('\n')  # trim leading newlines
-        codeblock = codeblock.rstrip()      # trim trailing whitespace
+    def _code_block_sub(self, match, is_fenced_code_block=False):
+        lexer_name = None
+        if is_fenced_code_block:
+            lexer_name = match.group(1)
+            if lexer_name:
+                formatter_opts = self.extras['fenced-code-blocks'] or {}
+            codeblock = match.group(2)
+            codeblock = codeblock[:-1]  # drop one trailing newline
+        else:
+            codeblock = match.group(1)
+            codeblock = self._outdent(codeblock)
+            codeblock = self._detab(codeblock)
+            codeblock = codeblock.lstrip('\n')  # trim leading newlines
+            codeblock = codeblock.rstrip()      # trim trailing whitespace
 
-        if "code-color" in self.extras and codeblock.startswith(":::"):
-            lexer_name, rest = codeblock.split('\n', 1)
-            lexer_name = lexer_name[3:].strip()
-            lexer = self._get_pygments_lexer(lexer_name)
-            codeblock = rest.lstrip("\n")   # Remove lexer declaration line.
-            if lexer:
+            # Note: "code-color" extra is DEPRECATED.
+            if "code-color" in self.extras and codeblock.startswith(":::"):
+                lexer_name, rest = codeblock.split('\n', 1)
+                lexer_name = lexer_name[3:].strip()
+                codeblock = rest.lstrip("\n")   # Remove lexer declaration line.
                 formatter_opts = self.extras['code-color'] or {}
+
+        if lexer_name:
+            lexer = self._get_pygments_lexer(lexer_name)
+            if lexer:
                 colored = self._color_with_pygments(codeblock, lexer,
                                                     **formatter_opts)
                 return "\n\n%s\n\n" % colored
@@ -1440,7 +1504,7 @@ class Markdown(object):
     def _do_code_blocks(self, text):
         """Process Markdown `<pre><code>` blocks."""
         code_block_re = re.compile(r'''
-            (?:\n\n|\A)
+            (?:\n\n|\A\n?)
             (               # $1 = the code block -- one or more lines, starting with a space/tab
               (?:
                 (?:[ ]{%d} | \t)  # Lines must start with a tab or a tab-width of spaces
@@ -1450,9 +1514,21 @@ class Markdown(object):
             ((?=^[ ]{0,%d}\S)|\Z)   # Lookahead for non-space at line-start, or end of doc
             ''' % (self.tab_width, self.tab_width),
             re.M | re.X)
-
         return code_block_re.sub(self._code_block_sub, text)
 
+    _fenced_code_block_re = re.compile(r'''
+        (?:\n\n|\A\n?)
+        ^```([\w+-]+)?[ \t]*\n      # opening fence, $1 = optional lang
+        (.*?)                       # $2 = code block content
+        ^```[ \t]*\n                # closing fence
+        ''', re.M | re.X | re.S)
+
+    def _fenced_code_block_sub(self, match):
+        return self._code_block_sub(match, is_fenced_code_block=True);
+
+    def _do_fenced_code_blocks(self, text):
+        """Process ```-fenced unindented code blocks ('fenced-code-blocks' extra)."""
+        return self._fenced_code_block_re.sub(self._fenced_code_block_sub, text)
 
     # Rules for a code span:
     # - backslash escapes are not interpreted in a code span
@@ -1514,18 +1590,12 @@ class Markdown(object):
             # Do the angle bracket song and dance:
             ('<', '&lt;'),
             ('>', '&gt;'),
-            # Now, escape characters that are magic in Markdown:
-            ('*', self._escape_table['*']),
-            ('_', self._escape_table['_']),
-            ('{', self._escape_table['{']),
-            ('}', self._escape_table['}']),
-            ('[', self._escape_table['[']),
-            (']', self._escape_table[']']),
-            ('\\', self._escape_table['\\']),
         ]
         for before, after in replacements:
             text = text.replace(before, after)
-        return text
+        hashed = _hash_text(text)
+        self._escape_table[text] = hashed
+        return hashed
 
     _strong_re = re.compile(r"(\*\*|__)(?=\S)(.+?[*_]*)(?<=\S)\1", re.S)
     _em_re = re.compile(r"(\*|_)(?=\S)(.+?)(?<=\S)\1", re.S)
@@ -1813,13 +1883,13 @@ class MarkdownWithExtras(Markdown):
 
 #---- internal support functions
 
-class UnicodeWithAttrs(str):
+class UnicodeWithAttrs(unicode):
     """A subclass of unicode used for the return value of conversion to
     possibly attach some attributes. E.g. the "toc_html" attribute when
     the "toc" extra is used.
     """
+    metadata = None
     _toc = None
-    @property
     def toc_html(self):
         """Return the HTML for the current TOC.
 
@@ -1852,7 +1922,7 @@ class UnicodeWithAttrs(str):
                 lines[-1] += "</li>"
             lines.append("%s</ul>" % indent())
         return '\n'.join(lines) + '\n'
-
+    toc_html = property(toc_html)
 
 ## {{{ http://code.activestate.com/recipes/577257/ (r1)
 _slugify_strip_re = re.compile(r'[^\w\s-]')
@@ -1865,8 +1935,8 @@ def _slugify(value):
     From Django's "django/template/defaultfilters.py".
     """
     import unicodedata
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = str(_slugify_strip_re.sub('', value).strip().lower())
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode()
+    value = _slugify_strip_re.sub('', value).strip().lower()
     return _slugify_hyphenate_re.sub('-', value)
 ## end of http://code.activestate.com/recipes/577257/ }}}
 
@@ -2199,18 +2269,25 @@ def main(argv=None):
             from subprocess import Popen, PIPE
             print("==== Markdown.pl ====")
             p = Popen('perl %s' % markdown_pl, shell=True, stdin=PIPE, stdout=PIPE, close_fds=True)
-            p.stdin.write(text)
+            p.stdin.write(text.encode('utf-8'))
             p.stdin.close()
-            perl_html = p.stdout.read()
-            sys.stdout.write(perl_html)
+            perl_html = p.stdout.read().decode('utf-8')
+            if py3:
+                sys.stdout.write(perl_html)
+            else:
+                sys.stdout.write(perl_html.encode(
+                    sys.stdout.encoding or "utf-8", 'xmlcharrefreplace'))
             print("==== markdown2.py ====")
         html = markdown(text,
             html4tags=opts.html4tags,
             safe_mode=opts.safe_mode,
             extras=extras, link_patterns=link_patterns,
             use_file_vars=opts.use_file_vars)
-        sys.stdout.write(
-            html.encode(sys.stdout.encoding or "utf-8", 'xmlcharrefreplace'))
+        if py3:
+            sys.stdout.write(html)
+        else:
+            sys.stdout.write(html.encode(
+                sys.stdout.encoding or "utf-8", 'xmlcharrefreplace'))
         if extras and "toc" in extras:
             log.debug("toc_html: " +
                 html.toc_html.encode(sys.stdout.encoding or "utf-8", 'xmlcharrefreplace'))
