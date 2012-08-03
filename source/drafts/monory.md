@@ -1,2 +1,0 @@
-[Топ десять](http://lifehacker.com/5928950/top-10-secret-features-of-os-x-mountain-lion) неочевидных собенностей Mountain Lion
-Javascript-фреймворк Meteor [получил](http://habrahabr.ru/post/148648/) 11 миллионов долларов инвестиций
