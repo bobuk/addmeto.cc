@@ -12,7 +12,7 @@
            "section": "source/templates/section.mustache",
            "archive": "source/templates/archive.mustache"
         },
-        "editor": "open -a /Applications/iA\\ Writer.app '%s'",
+        "editor": "open '%s'",
         "posts": "source/posts/",
         "section": "source/section/",
         "drafts": "source/drafts/",
