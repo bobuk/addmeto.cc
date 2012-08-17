@@ -28,7 +28,7 @@
 
 ## Немного разных ссылок
 
-* [Большое обозрение поиска в Windows8](www.bing.com/community/site_blogs/b/search/archive/2012/08/15/bingonwindows8.aspx). Это очень круто, если бы не win8 - я бы пользовался с удовольствием. 
+* [Большое обозрение поиска в Windows8](http://www.bing.com/community/site_blogs/b/search/archive/2012/08/15/bingonwindows8.aspx). Это очень круто, если бы не win8 - я бы пользовался с удовольствием. 
 * [Подробный обзор новой системы для публикации - Medium](http://www.niemanlab.org/2012/08/13-ways-of-looking-at-medium-the-new-bloggingsharingdiscovery-platform-from-ev-and-obvious/). Я не оценил. Т.е. да, красиво, но какого-то нового смысла я пока в ней не увидел.
 * [Исходники HTML5 MMO игры, на Node.js](https://github.com/tlhunter/Cobalt-Calibur-3). Исходники лежат давно, но обновляются часто и хорошо выглядят. Даже можно поднять свою копию.
 * [Интересное, что вы не знали о WebKit-инспекторе](http://blog.joocode.com/browsers/12-things-about-the-webkit-inspector-i-didnt-know/). Я в последнее время пользуюсь только им и только в Safari. Так же загляните в каменты, там тоже много пользы.
