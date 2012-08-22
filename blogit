@@ -37,7 +37,7 @@ def saveto(fres, addflag = ''):
 def tags_cludge(tag):
     c = tag.group(1)
     if c == '*':
-        tag = '<b style="font-size: 1.6em; color: yellow;">✭</b>'
+        tag = '<b style="font-size: 1.6em; color: gold;">✭</b>'
     else:
         tag = "<small>#" + c + "</small>"
     return ' ' + tag
