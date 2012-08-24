@@ -17,19 +17,17 @@ def steganoText(text, code, lang='ru'):
     code_i = get_code_iter(code)
     fin = []
     repl = replacers[lang]
-    rw     = { l[0]:l[1] for l in zip(repl[0] + repl[1], repl[1]+repl[0])}
+    rw     = { l[0]:l[1] for l in zip(repl[0], repl[1])}
     for x in text:
         t = (rw[x] if next(code_i) else x) if x in rw.keys() else x
-        if t != x:
-            print (t, x)
-        else:
-            print (x)
+        fin.append(t)
     return ''.join(fin)
 
 def main(args):
     code = ' '.join(args) if args else 'bobuk'
     block = sys.stdin.read()
-    sys.stdout.write(steganoText(block, code))
+    text = steganoText(block, code)
+    sys.stdout.write(text)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
