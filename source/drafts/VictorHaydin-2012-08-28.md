@@ -1,0 +1,1 @@
+Небольшая [статья](http://www.elekslabs.com/2012/08/amazon-glacier-how-does-it-may-work.html) о сервисе Amazon Glacier, о том как он возможно работает и почему получилось так, что его сделал именно Амазон.
