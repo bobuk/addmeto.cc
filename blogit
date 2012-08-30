@@ -67,6 +67,16 @@ def makeHtml(inbound):
     res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
     return res
 
+def getTags(entry):
+    tags = {}
+    for line in entry.content.split('\n'):
+        line = line.strip()
+        tagsFinded = re.findall(" \#([a-zA-Z0-9\*]+)", line) + re.findall("\{([a-zA-Z0-9\*]+)\}", line)
+        for tag in tagsFinded:
+            tags[tag] = tags.get(tag,[])
+            tags[tag].append({'page' : entry.page, 'line' : line})
+    return tags    
+
 def extract_numbers(s):
     s = s.replace('.md', '')
     num = ''.join((x for x in s if x.isdigit()))
@@ -164,6 +174,7 @@ class MarkDownEntry(Entry):
             title, rest = self.content.split('\n', 1)
             self.title = title
             self.content = rest
+        self.tags = getTags(self)
         self.content = makeHtml(self.content)
         self.result = os.path.join(config['local']['results']['posts'],
                                                  self.page, 'index.html')
@@ -203,7 +214,8 @@ class Archive:
                 'conf': config,
                 'title': 'Archive',
                 'items': items,
-                'permalink': config['site'] + '/archive'
+                'permalink': config['site'] + '/archive',
+                'tags': self.idx['tags'].values()
             })
         with saveto(self.results) as fl:
             fl.write(res)
@@ -465,6 +477,7 @@ def regen(wipe=False, force=False, noindex=False, andsync=False, sections=False)
     """regenerate index and all pages"""
     cache = Index(ro=True)
     with Index() as idx:
+        tags = {}
         if wipe:
             idx['idx'] = []
             cache['idx'] = []
@@ -472,6 +485,10 @@ def regen(wipe=False, force=False, noindex=False, andsync=False, sections=False)
             entry = gen_page(page=item, force=force, index=cache)
             if entry:
                 put_to_index(index=idx, entry=entry)
+                for tag in entry.tags:
+                    tags[tag] = tags.get(tag, {'name': tag, 'hits': []})
+                    tags[tag]['hits'] = tags[tag]['hits'] + entry.tags[tag]
+        idx['tags'] = tags
     if sections:
         for item in os.listdir(config['local']['section']):
             entry = gen_section(page=item)

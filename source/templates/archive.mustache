@@ -88,6 +88,17 @@
             <li><a href="{{ fname }}">{{ subtitle }}</a></li>
         {{/items }}
         </ul>
+        <h2>Tags</h2>
+        <ul>
+        {{#tags}}
+          <li>{{name}}</li>
+          <ul>
+            {{#hits}}
+              <li>{{page}} {{line}}</li>
+            {{/hits}}
+          </ul>
+        {{/tags}}
+        </ul>
       </article>
 
       <hr>
