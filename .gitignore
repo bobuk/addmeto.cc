@@ -3,3 +3,7 @@ results/archive/
 results/feed
 results/index.html
 results/post/
+results/style.css
+results/js/script.js
+results/*.html
+.idea

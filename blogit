@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+# coding=utf-8
 import sys
 sys.path.insert(0, 'libs/')
 import os
 import json
 from datetime import datetime, timedelta
-import re
-import urllib, urllib.request; urlopen = lambda x: json.loads(urllib.request.urlopen(x).read().decode('utf-8'))
+import re, shutil, gzip, functools
+import traceback
 
 import pystache
 import baker
@@ -14,11 +15,6 @@ import markdown2 as markdown
 from pyatom import AtomFeed
 current_date = datetime.now().strftime('%Y-%m-%d')
 daydelta = timedelta(days=1)
-
-def getCommiters(path):
-    url = 'https://api.github.com/repos/bobuk/addmeto.cc/commits?path=source/posts/' \
-            +  path +'.md' # + '&callback=github'
-    return urlopen(url)
 
 def loadConfigs(path=os.getcwd()):
     fname = os.path.join(path, 'config.json')
@@ -29,22 +25,22 @@ def loadConfigs(path=os.getcwd()):
 config = loadConfigs()
 
 
-def saveto(fres):
+def saveto(fres, addflag = ''):
     dname = os.path.dirname(fres)
     try:
         os.makedirs(dname)
     except:
         pass
-    return open(fres, 'w')
+    return open(fres, 'w' + addflag)
 
 
 def tags_cludge(tag):
     c = tag.group(1)
     if c == '*':
-        tag = '<b style="font-size: 1.6em; color: yellow;">✭</b>'
+        tag = '<b style="font-size: 1.6em; color: gold;">✭</b>'
     else:
         tag = "<small>#" + c + "</small>"
-    return tag
+    return ' ' + tag
 
 
 def makeHtml(inbound):
@@ -67,8 +63,25 @@ def makeHtml(inbound):
 
     res = markdown.markdown(res, extras=["cuddled-lists"])
 
+    res = re.sub(' \#([a-zA-Z0-9\*]+)', tags_cludge, res)
     res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
     return res
+
+def extract_numbers(s):
+    s = s.replace('.md', '')
+    num = ''.join((x for x in s if x.isdigit()))
+    alpha = ''.join((x for x in s if x.isalpha()))
+    return num + '-' + alpha
+
+def _perversed_sort(x,y):
+    x = extract_numbers(x)
+    y = extract_numbers(y)
+    return -1 if x > y else 1 if x < y else 0
+
+def perversed(vd):
+    "Sort dictionary in my own way, aha"
+    return sorted(vd, key=functools.cmp_to_key(_perversed_sort))
+
 
 class Index(dict):
     def __init__(self, filename=None, ro=False, *args, **kwds):
@@ -106,11 +119,15 @@ class Index(dict):
 class Entry:
     def __init__(self, page, empty=False):
         self.is_index = False
-        post_path = config['local']['posts']
-        self.fullpath = os.path.join(post_path, page)
+        if '/' in page:
+            self.fullpath = page
+            self.page = os.path.basename(page).split('.')[0]
+        else:
+            self.page = page
+            post_path = config['local']['posts']
+            self.fullpath = os.path.join(post_path, page)
         if '.' not in self.fullpath:
             self.fullpath = self.fullpath + '.md'
-        self.page = page
         self.title = None
         self.cdate = os.path.getmtime(self.fullpath)
         self.fdate = self.cdate
@@ -147,26 +164,13 @@ class MarkDownEntry(Entry):
             title, rest = self.content.split('\n', 1)
             self.title = title
             self.content = rest
-        self.draft = 'draft' in self.title or 'DRAFT' in self.title
         self.content = makeHtml(self.content)
         self.result = os.path.join(config['local']['results']['posts'],
                                                  self.page, 'index.html')
         self.permalink = config['site'] + config['local']['results']['site'] + self.page
 
-    def commiters(self):
-        res = ""
-        com = getCommiters(self.page)
-        for x in com:
-            committer = x['committer']
-            c = '<img src="http://gravatar.com/avatar/' + committer['gravatar_id'] + '?s=16"/>'
-            c = '<a href="' + committer['url'].replace('api.','').replace('/users', '') + '">' + c + committer['login']+ '</a>'
-            c = '<span class="committer">' + c + '</span>'
-            res += c
-        res += ''
-        return res
 
     def do(self, template):
-        self.commiters()
         return self.do_to(template, self.result)
 
     def do_to(self, template, fpath):
@@ -175,7 +179,6 @@ class MarkDownEntry(Entry):
                 'conf': config, 'title': self.title,
                 'cdate': self.cdate, 'fdate': self.fdate,
                 'content': self.content.replace('\n', ' '),
-                'committers': self.commiters(),
                 'page': self.page,
                 'permalink': self.permalink
             })
@@ -190,9 +193,7 @@ class Archive:
 
     def do(self, template):
         items = []
-        for x in reversed(self.idx['idx']):
-            if 'draft' in self.idx[x] and self.idx[x]['draft']:
-                continue
+        for x in perversed(self.idx['idx']):
             items.append({
                 'fname': self.idx[x]['permalink'],
                 'subtitle': self.idx[x]['title'],
@@ -218,9 +219,7 @@ class RSS:
                     feed_url=config['site'] + "feed",
                     url=config['site'][:-1] if config['site'].endswith('/') else config['site'],
                     author=config['author'])
-        for x in list(reversed(self.idx['idx']))[:10]:
-            if 'draft' in self.idx[x] and self.idx[x]['draft']:
-                continue
+        for x in list(perversed(self.idx['idx']))[:10]:
             page = MarkDownEntry(x)
             feed.add(title=self.idx[x]['title'],
                  content=page.content,
@@ -229,10 +228,11 @@ class RSS:
                  url=self.idx[x]['permalink'],
                  updated=datetime.fromtimestamp(self.idx[x]['cdate'])
             )
-        with saveto(self.results) as fl:
-            fl.write(feed.to_string())
+        feedout = gzip.compress(bytes(feed.to_string(), 'utf-8'))
+        with saveto(self.results, 'b') as fl:
+            fl.write( feedout )
 
-def get_true_page(page = current_date):
+def get_true_page_name(page = current_date):
     if 'yesterday' in page:
         page = page.replace('yesterday', (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'))
     elif 'tomorrow' in page:
@@ -242,6 +242,72 @@ def get_true_page(page = current_date):
     if '.' in page:
         page = page.rsplit('.', 1)[0]
     return page
+
+
+
+def get_true_entry(page, force, index):
+    fpath = os.path.join(config['local']['posts'], page + '.md')
+
+    with index as idx:
+        if not force:
+            if page in idx and os.path.getmtime(fpath) <= idx[page]['cdate']:
+                return None
+
+    entry = MarkDownEntry(page)
+
+    if page not in idx['idx']:
+        entry.is_index = True
+    else:
+        last = None
+        for x in perversed(idx['idx']):
+            if 'draft' not in idx[x] or idx[x]['draft'] == False:
+                last = x
+                break
+        if last == page:
+            entry.is_index = True
+
+    return entry
+
+
+def put_to_index(index, entry):
+    page = entry.page
+    index[page] = dict(
+        permalink=entry.permalink,
+        title=entry.title,
+        cdate=entry.cdate,
+        fdate=entry.fdate,
+    )
+
+    if page not in index['idx']:
+        index['idx'].append(page)
+
+def gen_section(page):
+    page = get_true_page_name(page)
+    fpath = os.path.join(config['local']['section'], page + '.md')
+    entry = MarkDownEntry(fpath)
+    if not entry:
+        return
+    entry.do_to(
+        config['local']['templates']['section'],
+        config['local']['results']['path'] + page + '.html'
+    )
+    sys.stdout.write('Section ' + page + '.html written\n')
+    return
+
+def gen_page(page, force, index):
+    page = get_true_page_name(page)
+    entry = get_true_entry(page, force, index)
+    if not entry:
+        return
+
+    entry.do(config['local']['templates']['post'])
+    sys.stdout.write('File %s written\n' % entry.result)
+    if entry.is_index:
+        entry.do_to(config['local']['templates']['post'],
+                    config['local']['results']['path'] + 'index.html')
+        sys.stdout.write('Page ' + page + ' also is index\n')
+
+    return entry
 
 @baker.command(
     shortopts={
@@ -254,7 +320,7 @@ def get_true_page(page = current_date):
 def entry(page=current_date, overwrite=False, edit=False):
     """create and edit new blog entry"""
     path = config['local']['posts']
-    page = get_true_page(page)
+    page = get_true_page_name(page)
 
     fullpath = os.path.join(path, page + '.md')
     if os.path.isfile(fullpath):
@@ -270,63 +336,93 @@ def entry(page=current_date, overwrite=False, edit=False):
         sys.stdout.write(fullpath + '\n')
     return
 
+@baker.command(
+    shortopts={
+            "overwrite": "o",
+            "edit": "e"},
+    params={"page":         "section name",
+            "overwrite":    "overwrite section even if exists",
+            "edit":         "open text editor if section created"}
+    )
+def section(page, overwrite=False, edit=False):
+    """create and edit new static site section"""
+    path = config['local']['section']
+    page = get_true_page_name(page)
 
-@baker.command
-def show(page=current_date):
-    """print out page"""
-    page = get_true_page(page)
-    entry = MarkDownEntry(page)
-    if entry:
-        sys.stdout.write(entry.content.replace('\n', ' '))
+    fullpath = os.path.join(path, page + '.md')
+    if os.path.isfile(fullpath):
+        if not overwrite and not edit:
+            sys.stderr.write('File %s already exists.\n' % fullpath)
+            return
+    else:
+        with saveto(fullpath) as fl:
+            fl.write('# Title\n\n')
+    if edit:
+        os.system(config['local']['editor'] % fullpath)
+    else:
+        sys.stdout.write(fullpath + '\n')
     return
 
+@baker.command(
+    shortopts={
+            "page": "p"},
+    params={"page":         "page name"}
+    )
+
+def draft(page=current_date):
+    """create and edit draft"""
+    path = config['local']['drafts']
+    page = get_true_page_name(page)
+
+    fullpath = os.path.join(path, page + '.md')
+    template = '# Title\n\n-----\n\n## Для всех\n## На грани\n## Для гиков\n## Разное\n\n'
+    if not os.path.isfile(fullpath):
+        with saveto(fullpath) as fl:
+            fl.write(template)
+    sys.stdout.write(fullpath + '\n')
+    os.system(config['local']['editor'] % fullpath)
+    return
+
+@baker.command(
+    shortopts={
+            "page": "p"},
+    params={"page":         "page name",}
+    )
+def publish(page=current_date):
+    """publish draft to usual post"""
+    srce_path = config['local']['drafts']
+    dest_path = config['local']['posts']
+    page = get_true_page_name(page)
+
+    s_fullpath = os.path.join(srce_path, page + '.md')
+    d_fullpath = os.path.join(dest_path, page + '.md')
+    if not os.path.isfile(s_fullpath):
+        sys.stderr.write('Draft `' + page + "' not found\n")
+        return
+    if os.path.isfile(d_fullpath):
+        sys.stderr.write('Draft `' + page + "' cannot be unpublished because this page already on air\n")
+        return
+    shutil.move(s_fullpath, d_fullpath)
+    sys.stdout.write('Page `' + page + "' published\n")
+    return
 
 @baker.command(
     shortopts={"page":  "p",
+               "section": "s",
                "force": "f"},
     params={"page":         "page name",
+            "section":      "use section instead of pages",
             "force":    "force regen page"}
-    )
-def gen(page=current_date, force=False):
+)
+def gen(page=current_date, section=False, force=False):
     """generate a static .html for a page"""
-    page = get_true_page(page)
-    fpath = os.path.join(config['local']['posts'], page + '.md')
-    if not force:
-        with Index(ro=True) as idx:
-            if page in idx and os.path.getmtime(fpath) <= idx[page]['cdate']:
-                return
-    entry = MarkDownEntry(page)
-    if entry.draft:
-        sys.stdout.write('Page ' + page + ' drafted.\n')
-    else:
-        with Index(ro=True) as idx:
-            if page not in idx['idx']:
-                entry.is_index = True
-            else:
-                last = None
-                for x in reversed(idx['idx']):
-                    if 'draft' not in idx[x] or idx[x]['draft'] == False:
-                        last = x
-                        break
-                if last == page:
-                    entry.is_index = True
-        entry.do(config['local']['templates']['post'])
-        sys.stdout.write('File %s writen\n' % entry.result)
-        if entry.is_index:
-            entry.do_to(config['local']['templates']['post'],
-                        config['local']['results']['path'] + 'index.html')
-            sys.stdout.write('Page ' + page + ' also is index\n')
-    with Index() as idx:
-        idx[page] = dict(
-            permalink=entry.permalink,
-            title=entry.title,
-            cdate=entry.cdate,
-            fdate=entry.fdate,
-            draft=entry.draft,
-        )
-        if page not in idx['idx']:
-            idx['idx'].append(page)
-
+    if section:
+        gen_section(page)
+        return
+    entry = gen_page(page, force, section, Index(ro=True))
+    if entry:
+        with Index() as idx:
+            put_to_index(idx, entry)
 
 @baker.command
 def archive():
@@ -343,30 +439,134 @@ def feed():
     f.do()
     sys.stdout.write('Atom feed ' + f.results + ' saved\n')
 
+@baker.command
+def regenCSS():
+    '''regen .less files to style.css'''
+    cwd = os.getcwd()
+    os.chdir(config['local']['templates']['path'] + 'bootstrap/less')
+    os.system("lessc -x style.less | gzip -c -9 > " + \
+                cwd + '/' + config['local']['results']['path'] + 'style.css')
+    os.chdir(cwd)
 
 @baker.command(
     shortopts={
             "wipe": "w",
             "force": "f",
             "noindex": "n",
-            "andsync": "s"},
+            "andsync": "s",
+            "sections": "S"},
     params={"wipe":         "wipe out current index",
             "force":    "force regen pages",
             "noindex": "do not regen feed and archives",
-            "andsync": "execute `sync` command right after finish"}
+            "andsync": "execute `sync` command right after finish",
+            "sections": "regen also all static sections"}
     )
-def regen(wipe=False, force=False, noindex=False, andsync=False):
+def regen(wipe=False, force=False, noindex=False, andsync=False, sections=False):
     """regenerate index and all pages"""
-    if wipe:
-        with Index() as idx:
+    cache = Index(ro=True)
+    with Index() as idx:
+        if wipe:
             idx['idx'] = []
-    for item in os.listdir(config['local']['posts']):
-        gen(page=item, force=force)
+            cache['idx'] = []
+        for item in os.listdir(config['local']['posts']):
+            entry = gen_page(page=item, force=force, index=cache)
+            if entry:
+                put_to_index(index=idx, entry=entry)
+    if sections:
+        for item in os.listdir(config['local']['section']):
+            entry = gen_section(page=item)
     if not noindex:
+        regenCSS()
         archive()
         feed()
     if andsync:
         sync()
+
+@baker.command
+def linkscheck(url = config['site']):
+    """Check for broken links on front page of your site"""
+    import bs4
+    import requests
+    links = \
+        [x for x in \
+            bs4.BeautifulSoup( \
+                requests.get(url).content)\
+            .findAll('a', href=True)
+        if not x['href'].startswith('/')]
+    sys.stdout.write('Found ' + str(len(links)) + ' links. Checking.\n')
+    fails = []
+    for link in links:
+        r = requests.get(link['href'])
+        if r.status_code != 200:
+            fails.append(link['href'])
+            sys.stdout.write('X')
+        else:
+            sys.stdout.write('.')
+        sys.stdout.flush()
+    sys.stdout.write('\n')
+    if fails:
+        sys.stdout.write('We found ' + str(len(fails)) + 'broken links:\n')
+        for link in fails:
+            sys.stdout.write('  ' + link + '\n')
+            sys.exit(-2)
+    else:
+        sys.stdout.write('Everything OK.\n')
+    return
+
+@baker.command
+def mobilepage(page=current_date):
+    """Check for broken links on front page of your site"""
+    import re
+    import requests
+    import json
+    from hashlib import md5
+
+    rx = re.compile('[^!]+\[([^\]]+)\]\(([^\)]+)\)',re.LOCALE|re.UNICODE)
+    path = config['local']['posts']
+    page = get_true_page_name(page)
+
+    fullpath = os.path.join(path, page + '.md')
+    if os.path.isfile(fullpath):
+        links = []
+        fulltext = open(fullpath, 'r').read()
+        appendix = []
+        for line in fulltext.split('\n'):
+            line = line.strip()
+            if line.startswith('!'):
+                continue
+            for c in '[]()':
+                if c not in line:
+                    continue
+            match = rx.findall(line)
+            if not match:
+                continue
+            for (title, url) in match:
+                if 'addmeto.cc' in url:
+                    continue
+                res = json.loads(requests.get('http://shrtdb:5011', params={'url': url}).content.decode('utf-8'))
+                if 'error' in res:
+                    sys.stdout.write('error in '+ url + '\n')
+                    sys.exit(-4)
+                else:
+                    hsh = md5(url.encode('utf-8')).hexdigest()
+                    fulltext = fulltext.replace(url, '#' + hsh)
+                    appendix.append(
+                        '<section id="' + hsh + '"><h1>' + \
+                            res['title'] + '</h1>' + \
+                            res['text'] + \
+                            '<a href="' + url + '">[Original link]</a>' + \
+                        '</section>\n')
+
+        newtext = """<!doctype html>
+            <head>
+                <meta charset='utf-8'>
+            </head><body>""" + makeHtml(fulltext) + ''.join(appendix) + "</body>"
+
+        result = os.path.join(config['local']['results']['posts'],
+                                                 page, 'mobile.html')
+        with open(result, 'w') as fl:
+            fl.write(newtext)
+        sys.stdout.write('Mobile page ' + page + '/mobile.html writen\n')
 
 
 @baker.command
@@ -374,22 +574,77 @@ def sync():
     """syncronize results tree with s3 server"""
     cwd = os.getcwd()
     os.chdir(config['local']['results']['path'])
-    os.system("s3cmd --no-preserve --recursive --exclude=feed sync * " + config['s3']['bucket'])
-    os.system("s3cmd --no-preserve -m 'text/xml' put feed " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --recursive --exclude=feed --exclude=style.css sync * " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --add-header=Content-Encoding:gzip sync -m 'text/xml' sync feed " + config['s3']['bucket'])
+    os.system("s3cmd --no-preserve --add-header=Content-Encoding:gzip sync style.css " + config['s3']['bucket'])
     os.chdir(cwd)
 
 
-@baker.command
-def server(port=8000):
+def listen_dir_changes(path, func):
+    from watchdog.observers import Observer
+    from watchdog.events import LoggingEventHandler
+    from watchdog.events import RegexMatchingEventHandler
+    log_handler = LoggingEventHandler()
+    def delegate(event):
+        log_handler.dispatch(event)
+        func(event)
+    class FuncHandler(RegexMatchingEventHandler):
+        def on_any_event(self, event):
+            super().on_any_event(event)
+            delegate(event)
+    func_handler = FuncHandler(ignore_regexes=[r'.*___jb_...___', r'.*\.index.db', '.*\.bak'],
+        ignore_directories=True)
+    observer = Observer()
+    observer.schedule(func_handler, path, recursive=True)
+    return observer
+
+@baker.command(
+    shortopts={"port": "p",
+               "listen" : "l",
+               "wipe" : "w"},
+    params={"port" : "server port",
+            "listen" : "listens source folder and automatically regenerates blog",
+            "wipe" : "the same as regen -f -w"}
+)
+
+def server(port=8000, listen=False, wipe=False):
     """run a local http server in results tree"""
     cwd = os.getcwd()
+
+    def with_cwd(fun):
+        _saved_cwd = os.getcwd()
+        try:
+            os.chdir(cwd)
+            fun()
+        except Exception:
+            traceback.print_exc(file=sys.stdout)
+        finally:
+            os.chdir(_saved_cwd)
+
+    _regen = functools.partial(regen, wipe=wipe, force=wipe, noindex=not wipe)
+    if listen and wipe:
+        with_cwd(_regen)
+
     os.chdir(config['local']['results']['path'])
     import http.server
     import socketserver
-    Handler = http.server.SimpleHTTPRequestHandler
-    httpd = socketserver.TCPServer(("", port), Handler)
-    print("serving at port", port)
+    class GzippedResourcesAwareHandler(http.server.SimpleHTTPRequestHandler):
+        def do_GET(self):
+            if self.path in ['/style.css', '/feed']:
+                    self.send_header("Content-Encoding", "gzip")
+            super(GzippedResourcesAwareHandler, self).do_GET()
+
+    if listen:
+        path = os.path.join(cwd, config['local']['source'])
+        observer = listen_dir_changes(path, lambda event: with_cwd(_regen))
+        observer.start()
+
+    httpd = socketserver.TCPServer(("", port), GzippedResourcesAwareHandler)
+    sys.stdout.write("serving at port " + str(port) + '\n')
     httpd.serve_forever()
+    if observer:
+        observer.stop()
+        observer.join()
     os.chdir(cwd)
 
 baker.run()
