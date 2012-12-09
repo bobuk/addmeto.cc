@@ -61,7 +61,7 @@ def makeHtml(inbound):
         res.append(line)
     res = '\n'.join(res)
 
-    res = markdown.markdown(res, extras=["cuddled-lists"])
+    res = markdown.markdown(res, extras=["cuddled-lists", "footnotes"])
 
     res = re.sub(' \#([a-zA-Z0-9\*]+)', tags_cludge, res)
     res = re.sub('\{([a-zA-Z0-9\*]+)\}', tags_cludge, res)
