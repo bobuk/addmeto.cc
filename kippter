@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+import os
+import json
+import sys; sys.path.append('libs/')
+import kippt
+from operator import itemgetter
+
+__cfg_singleton = None
+def config():
+    global __cfg_singleton
+    if not __cfg_singleton:
+        __cfg_singleton = json.loads(open(os.path.expanduser('~/.kippt'), 'r').read())
+    return __cfg_singleton
+
+def get_list(k, slug='inbox'):
+    [header, lists] = k.getLists()
+    inbox = lists[0]['id']
+    for li in lists:
+        if li['slug'] == slug:
+            inbox = li['id']
+    return inbox
+
+def get_clips(k, slug = 'inbox'):
+    inbox = get_list(k, slug)
+    [header, clips] = k.getClips(listID = inbox, limit=100)
+    return clips
+
+def move_clip(k, clip, listID):
+    clip_id = int(clip)
+    return k.updateClip(clip, listID=listID)
+
+def show(k):
+    res = []
+    clips = get_clips(k, 'inbox')
+    for clip in clips:
+        if '{' in clip['notes']:
+            before, middle = clip['notes'].split('{', 1)
+            middle, other = middle.split('}', 1)
+            note = "* " + before + '[' + middle + '](' + clip['url'] + ')' + other
+        else:
+            note = "* {notes} [ссылка]({url})".format_map(clip)
+        ts = int(clip['updated'])
+        if '#last' in note:
+            ts = ts - 1000000000
+            note = note.replace('#last', '')
+        res.append((ts, str(ts) + ' ' + note))
+    res = sorted(res, key = itemgetter(0), reverse=True)
+    print('\n'.join([x[1] for x in res]))
+
+def flush(k):
+    published = get_list(k, 'published')
+    for clip in get_clips(k, 'inbox'):
+        if move_clip(k, clip['id'], published):
+            print ('>>> ' + clip['title'])
+        else:
+            print ('??? ' + clip['title'])
+
+def unflush(k):
+    inbox = get_list(k, 'inbox')
+    for clip in get_clips(k, 'published'):
+        if move_clip(k, clip['id'], inbox):
+            print ('<<< ' + clip['title'])
+        else:
+            print ('??? ' + clip['title'])
+
+def main(args):
+    k = kippt.user(config()['user'], config()['token'])
+    if not k.checkAuth():
+        return 'No auth!'
+    if not args or args[0] == 'show':
+        show(k)
+    elif args[0] == 'flush':
+        flush(k)
+    elif args[0] == 'unflush':
+        unflush(k)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
