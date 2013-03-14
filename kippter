@@ -43,7 +43,7 @@ def show(k):
         if '#last' in note:
             ts = ts - 1000000000
             note = note.replace('#last', '')
-        res.append((ts, str(ts) + ' ' + note))
+        res.append((ts, note))
     res = sorted(res, key = itemgetter(0), reverse=True)
     print('\n'.join([x[1] for x in res]))
 
