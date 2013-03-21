@@ -8,8 +8,6 @@ import json, ast, requests, sys
 from urllib.parse import quote_plus
 
 class user:
-    # Example:
-    # client = kippt_wrapper.user('myUsername','kjsdfklj2lhg323423klj42')
     def __init__(self, username, apitoken):
         self.username = username
         self.apitoken = apitoken
@@ -17,12 +15,6 @@ class user:
                        'X-Kippt-API-Token': apitoken,
                        'X-Kippt-Client': 'Kippt-Python-Wrapper,me@ThomasBiddle.com,https://github.com/thomasbiddle/Kippt-Projects',
                        'content-type': 'application/vnd.kippt.20120609+json'}
-
-    # Check if our credentials are valid.
-    # Example:
-    # user.checkAuth()
-    #
-    # Return True on success and False on failure.
     def checkAuth(self):
         r = requests.get('https://kippt.com/api/account/', headers=self.header)
         if r.status_code is 200: return True
