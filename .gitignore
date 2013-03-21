@@ -1,9 +1,11 @@
 .index.db
 results/archive/
+results/about/
 results/feed
 results/index.html
-results/post/
-results/style.css
-results/js/script.js
-results/*.html
+results/2*/
+results/static/
+pages/archive.md
 .idea
+*.sublime-*
+v

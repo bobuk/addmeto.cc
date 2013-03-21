@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!--[if IE 8]> 				 <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Бобук :: Особенности современных интерфейсов</title>
+  <link href='http://fonts.googleapis.com/css?family=Poiret+One&subset=latin,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/static/css/normalize.css" />
+  <link rel="stylesheet" href="/static/css/foundation.min.css" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+
+  <script src="/static/js/vendor/custom.modernizr.js"></script>
+
+</head>
+<body>
+    <div class="row top">
+        <div class="large-10 columns">
+            <a href="#" data-dropdown="drop1"><div class="header-top">Еще один линкблог</div></a>
+            <div class="header-bottom hide-for-small">Тщательно отобранные ссылки, небрежно написанные буквы</div>
+        </div>
+        <div class="large-2 columns">
+            <a href="http://twitter.com/bobuk"><img src="/static/img/bobuk.png" class="right hide-for-small"/></a>
+        </div>
+        <hr class="header"/>
+    </div>
+    <div class="row">
+        <div class="large-12 large-centered columns">
+            <a href="/2012-06-04" ><h1 class="titles">Особенности современных интерфейсов</h1></a>
+            <article>
+                <p>Мои "темы дня" не обязательно новости, если вы понимаете, о чём я. Вот и сегодня, извините за неровный почерк.</p>
+<p>В конце прошлой недели ребята из <a href="https://blog.mozilla.org/ux/2012/06/firefox-heatmap-study-2012-results-are-in/">Mozilla UX выложили свой отчёт по использованию разных элементов интерфейса их браузера</a>. Сегодня я вам расскажу, что там было самое интересное. А это примерно всё.</p>
+<blockquote>
+<blockquote>
+<p><img alt="center" src="http://chyo.ru/testpilot.png" />&lt;&lt;</p>
+</blockquote>
+</blockquote>
+<p>Как, собственно, всё это происходило: в течении одной недели все данные тех, кто участвует в программе <a href="https://testpilot.mozillalabs.com/">Test Pilot</a>, отправлялись на сервера мозиллы. Всего было обследовано более 200 тысяч человек, с лёгким перекосом в сторону гиков. Ну, не то чтобы с лёгким, скорее, с сильным, потому что тест пилот обычно включён у пользователей Mozilla Nightly, например, у меня. Цель была понять, какими элементами интерфейса и как именно чаще всего пользуются люди, а так же какие фичи не замечают.</p>
+<p>Вот интересные области, куда нажимают люди в порядке возрастания частоты.</p>
+<ul>
+<li><strong>14.6%</strong> Кнопка "звёздочка", выполняющая функцию "быстрой закладки". Никогда не понимал, как она работает. Изучу подробнее.</li>
+<li><strong>20.9%</strong> Выбор поисковой системы в строке ввода поиска. Т.е. буквально каждый 5 меняет поисковую систему по умолчанию. Это очень много.</li>
+<li><strong>22.1%</strong> Кнопка "Домой". Кто и зачем ей ещё пользуется, а? Или это просто возможность быстрого перехода на любимый сайт?</li>
+<li><strong>27.0%</strong> Выбор подсказки в строке ввода поиска.</li>
+<li><strong>30.0%</strong> Панель закладок. Удивился. Я думал я один такой, постоянно использую Букмарк Бар.</li>
+<li><strong>40.1%</strong> Кнопка "Reload". Вот это реально ужас. Люди реально используют кнопку Reload! ШОК! ВИДЕО!</li>
+<li><strong>45.5%</strong> Сама строка ввода поиска.</li>
+<li><strong>47.7%</strong> Кнопка "Вперёд"</li>
+</ul>
+<p>А вот теперь самое интересное, то, что использует более половины пользователей регулярно.</p>
+<ul>
+<li><strong>60.7%</strong> выпадающая подсказка в строке ввода URL.</li>
+<li><strong>77.5%</strong> Кнопка "создать новый таб".</li>
+<li><strong>81.8%</strong> Строка ввода URL.</li>
+<li><strong>92.0%</strong> Кнопка "назад".</li>
+</ul>
+<p>Вот примерно такой топ. Вдвойне интересен он потому, что в 2010 году паттерн использования был 1:1 такой же.</p>
+<p>Выводы вы можете сделать сами. А потом сверить с моими, вот они:</p>
+<ul>
+<li>Люди умеют пользоваться саджестами, не только в поиске, но и в строке ввода URL. Поздравляю, люди, вы только что выросли в моих глазах!</li>
+<li>Люди используют разные поисковые системы. И всем браузерам предстоит с этим что-то решать, потому что сейчас все браузеры пытаются объединить опыт поисковой строки и строки ввода URL.</li>
+<li>Люди <em>очень</em> интенсивно используют закладки. Куда интенсивнее, чем я думал, а, значит, и тут нужна революция, ведь сейчас интерфейс закладок юзабелен только в панели закладок. Это, кстати, косвенно подтверждается и популярностью фичи "визуальные закладки" в яндекс.баре для FireFox.</li>
+<li>Всего 0.7% используют кнопку "показать все табы". Скорее всего, её надо убирать из интерфейса. К сожалению, эта же кнопка позволяет группировать табы, а это фича ради которой я и пользуюсь мозиллой.</li>
+</ul>
+<p>В этом опросе <a href="https://blog.mozilla.org/ux/2012/06/firefox-heatmap-study-2012-results-are-in/">так же получены результаты по использованию меню</a> и проч. Прочитайте, это очень познавательно и удивительно в некоторых аспектах. Открывает глаза на многие детали использования интернета в целом.</p>
+<hr />
+<h2>Для всех</h2>
+<ul>
+<li><a href="http://addmeto.cc/post/2012-05-30/">Я недавно писал о новом запуске Bit.ly</a>. <a href="http://thenextweb.com/apps/2012/06/02/not-a-fan-of-the-big-bitly-revamp-here-are-9-alternatives/">А вот реакция на запуск</a> - хороший обзор 9 интересных альтернатив для bit.ly. На самом деле у меня есть база из примерно 5 сотен сокращалок. От себя добавлю, что, если вам нужна просто сокращалка, а не набор свистелок - всегда есть <a href="http://clck.ru/">clck.ru</a> {bitly} {shortener}</li>
+<li><a href="http://www.businessinsider.com/apple-television-what-to-expect-2012-6">Эппловский телевизор, и почему стоит ждать от него революции</a>. Бизнесинсайдер всегда такой бизнесинсайдер. {apple} {tv} {fap} {fap} {fap}</li>
+<li><a href="http://thenextweb.com/insider/2012/06/02/photo-sharing-service-picplz-to-shut-down-on-3-july/">Фотохостинг PicPlz закрывается 3 июля. Совсем.</a> Все думают, что причина в инстаграме. {foto} {picplz} {instagram}</li>
+<li><a href="http://thenextweb.com/apps/2012/06/03/10-instagram-for-video-apps-to-watch/">10 инстаграммов, но для видео</a>. Я их все пробовал, нормальный только SocialCam. {video} {hipsters}</li>
+<li><a href="http://news.cnet.com/8301-17852_3-57446229-71/googles-fear-an-apple-facebook-love-fest/">Кошмар гугла: Apple-Фейсбук затусовались</a>. Действительно, Гугл, ударяясь в свой Г+, вряд ли учёл, что два таких огромных игрока могут запартнериться. {gplus} {google} {facebook} {apple}</li>
+<li><a href="http://techcrunch.com/2012/06/01/facebook-ios-6-integration/">И ещё немного на ту же тему: куски Facebook будут очень торчать в iOS6</a>. Я рад, потому что лучше facebook, чем вк и гплас :) {facebook} {ios6} {apple}</li>
+<li><a href="http://www.forbes.com/sites/anthonykosner/2012/06/02/touche-google-plans-to-announce-its-own-3d-maps-before-apple/">А вот и контрмеры: судя по всему, Google запустит 3d-карты быстрее, чем Apple</a>. Конечно, быстрее не значит лучше. Но поставить эпл в позицию догоняющих - приятно. <a href="http://thenextweb.com/google/2012/06/01/google-to-head-apple-off-at-the-pass-by-holding-3d-maps-event-june-6th-just-before-wwdc/">Еще один обзор этой темы от TNW</a> {apple} {google} {maps}</li>
+<li><a href="http://www.androidpolice.com/2012/06/01/mysterious-new-files-in-the-google-maps-6-8-apk-history-timeline-latitude-g-integration-and-more/">В Gmaps для андроида нашли неиспользованные иконки, видимо, для следующих релизов</a>. И по ним можно додумать будущий функционал. Круто же? {gmaps} {google}</li>
+<li><a href="http://gigaom.com/2012/06/01/when-facebook-goes-down-the-internet-barely-blinks/">Когда фейсбук ложится, весь интернет моргает</a> и это очевидно. Хотя, я думаю, хуже всего интернету от морганий youTube. {facebook}</li>
+<li><a href="http://arstechnica.com/information-technology/2012/06/nook-version-of-war-and-peace-turns-the-word-kindled-into-nookd/">Версия "Войны и Мира" для Nook <del>не влезла в память</del> заменяет слово Kindled на Nookd</a>. Хорошо что Толстой умер уже. {nook} {bandn} {kindle}</li>
+<li><a href="http://allthingsd.com/20120603/patent-peace-yahoo-and-facebook-in-advanced-negotiations-to-settle-fractious-infringement-lawsuits/">Яху и Facebook, вероятно, сумеют договориться по поводу патентов</a>. Правда, через суд :) {facebook} {yahoo} {lawyers}</li>
+</ul>
+<h2>На грани</h2>
+<ul>
+<li><a href="http://www.guardian.co.uk/technology/2012/jun/01/google-european-commission-search-results">Еврокомиссия намекает, что Google должен поменять поисковую выдачу или предстать перед Европейским судом</a>. Потому что нельзя быть на свете красивой такой и промотировать свои сервисы, незаслуженно ставя их выше чужих. Я, как ни странно, на стороне гугла. Их сервис, их правила. {google} {antitrust}</li>
+<li><a href="http://www.newscientist.com/article/dn21871-over55s-pick-passwords-twice-as-secure-as-teenagers.html">Пароли людей старше 55 вдвое круче, чем пароли подростков до 25</a>. О чем это говорит? О том, что у подростков нет представлений о безопасности? {security} {password}</li>
+<li><a href="http://www.imore.com/2012/05/31/higher-hanging-fruit-ios-6/">Статья-фантазия, что бы iOS6 могла утащить у других операционных систем</a>. Лично я никаких революций не жду, меня пока все устраивает. {ios} {apple}</li>
+<li><a href="http://www.theverge.com/2012/6/2/3058522/android-4-0-now-on-7-1-percent-of-devices-still-woefully-behind">Android 4 уже на 7% совместимых устройств</a>. Даже андроида 2.2 пока больше. {mobile} {android}</li>
+<li><a href="http://lifehacker.com/5915093/five-best-android-roms">5 лучших прошивок для андроида</a>. Мой выбор - cyanogen и miui. {andoird} {mobile} {miui}</li>
+<li><a href="http://justcramer.com/2012/06/02/the-cloud-is-not-for-you/">Интересное мнение Дэвида Крамера: Облачные решение не для вас</a>. О том, как выглядят цены на сервер, который действительно нагружен и помогут ли вам тут облака. Опять задумался, что наверное хочу свой сервер в аренду. {cloud} {money}</li>
+<li><a href="http://takingyourtalenttotheweb.com/">Книга "Taking your talent to the web" стала доступна онлайн</a>. Это исторически ценная книга, вышедшая в 2001 году, одна из самых древних книг по <em>современному</em> вебдизайну. {html} {design}</li>
+</ul>
+<h2>Для гиков</h2>
+<ul>
+<li><a href="https://www.facebook.com/notes/facebook-engineering/folly-the-facebook-open-source-library/10150864656793920">Фейсбук зарелизил библиотеку Folly</a>. Поздравьте меня. Я раньше комплексовал, что у нас в поиске тоже куча своих собственных реализаций всего подряд, даже класс строки был. Теперь я не переживаю, это у всех так, даже у стомиллиардных компаний! <a href="http://www.phoronix.com/scan.php?page=news_item&amp;px=MTExMjQ">Вот ещё краткое упоминание этой новости</a>. {facebook} {bicycle} {folly} {cplusplus}</li>
+<li>Многие очень рекомендуют использовать в качестве начального шаблона для сайта <a href="http://html5boilerplate.com/">HTML5 Boilerplate</a>. <a href="http://designmodo.com/html5-boilerplate-templates-tutorials/">Вот отличная подборка туториалов и шаблонов на основе HTML5 Boilerplate</a>. {html} {boilerplate}</li>
+<li><a href="http://blog.teaapp.com/post/24212825807/tea-earl-grey-hot-what-would-a-siri-api-look-like">Как выглядит API к Siri</a>. Интересно было почитать, хотя на 80% это домыслы, конечно. {siri} {api}</li>
+<li><a href="http://ricostacruz.com/jquery.transit/">jquery transit - библиотека для красивых визуальных преобразований</a>. Работает на CSS3, подходит только для современных браузеров. {html} {jquery} {css}</li>
+<li><a href="http://streamhacker.com/2012/06/03/nltk-2-release-highlights/">Как-то я упустил, вышел NLTK2, мой любимый фреймворк для работы с естественным языком</a>. Хотя я из него использую в основном нормалайзер, стеммер и средства для машинного обучения. {nltk} {python} {svm}</li>
+<li><a href="http://gravityonmars.github.com/Balloons.IO/">Красивый и визуально, и по коду чат, написанный на ноде и сокет.ио</a>. С пушем сообщений по вебсокету и хранением в редисе. {node} {chat}</li>
+</ul>
+            </article>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-6 columns">
+            <ul class="button-group radius">
+                <li><a href="https://coinbase.com/checkouts/85a4de3abf40136270f74111b625fbb6?c=addmetocc" target="_blank" class="button small">заБиткойнь</a></li>
+                <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=bobuk%40justos%2eorg&lc=RU&item_name=addmeto%2ecc&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" class="button small" target="_blank">заPayPalь</a></li>
+                <li><a href="#" data-reveal-id="myModal" class="button small">Я.Деньгуй</a></li>
+            </ul>
+        </div>
+        <div class="large-6 columns">
+            <a href="https://github.com/bobuk/addmeto.cc/blob/master/pages/2012-06-04.md" class="small button secondary radius right">ЗаGitHubить!</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="row">
+            <div class="large-12 columns">Григорий Бакунов (c) 2013, скопировано правильно.
+            </div>
+        </div>
+    </footer>
+
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter18771010 = new Ya.Metrika({id:18771010, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/18771010" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+  <script>
+  document.write('<script src=/static/' +
+  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <script src="/static/js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+
+<div id="myModal" class="reveal-modal medium">
+  <h2>Форма для Яндекс.Денег</h2>
+  <iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?uid=4100130214808&amp;default-sum=100&amp;targets=%D0%BD%D0%B0+%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0&amp;target-visibility=on&amp;project-name=Addmeto.cc&amp;project-site=http%3A%2F%2Faddmeto.cc%2F&amp;button-text=05&amp;comment=on&amp;hint=%D0%9F%D0%BE%D0%B6%D0%B5%D0%BB%D0%B0%D1%82%D1%8C+%D1%87%D0%B5%D0%B3%D0%BE-%D0%BD%D0%B8%D0%B1%D1%83%D0%B4%D1%8C+%D0%B4%D0%BE%D0%B1%D1%80%D0%BE%D0%B3%D0%BE&amp;mail=on" width="450" height="201"></iframe>
+</div>
+<ul id="drop1" class="f-dropdown" data-dropdown-content>
+  <li><a href="/">Сегодня</a></li>
+  <li><a href="/archive">Архив</a></li>
+  <li><a href="/about">О проекте</a></li>
+  <li><a href="/feed">RSS</a></li>
+</ul>
+
+</html>

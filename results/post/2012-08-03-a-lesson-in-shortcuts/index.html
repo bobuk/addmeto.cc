@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!--[if IE 8]> 				 <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Бобук :: Урок о сокращениях.</title>
+  <link href='http://fonts.googleapis.com/css?family=Poiret+One&subset=latin,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/static/css/normalize.css" />
+  <link rel="stylesheet" href="/static/css/foundation.min.css" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+
+  <script src="/static/js/vendor/custom.modernizr.js"></script>
+
+</head>
+<body>
+    <div class="row top">
+        <div class="large-10 columns">
+            <a href="#" data-dropdown="drop1"><div class="header-top">Еще один линкблог</div></a>
+            <div class="header-bottom hide-for-small">Тщательно отобранные ссылки, небрежно написанные буквы</div>
+        </div>
+        <div class="large-2 columns">
+            <a href="http://twitter.com/bobuk"><img src="/static/img/bobuk.png" class="right hide-for-small"/></a>
+        </div>
+        <hr class="header"/>
+    </div>
+    <div class="row">
+        <div class="large-12 large-centered columns">
+            <a href="/2012-08-03-a-lesson-in-shortcuts" ><h1 class="titles">Урок о сокращениях.</h1></a>
+            <article>
+                <p><em>Это примерный пересказ <a href="https://plus.google.com/101960720994009339267/posts/R58WgWwN9jp">поста Роба Пайка в его Г+</a>. Я плохой переводчик, поэтому никогда не называю такие тексты «переводом»</em></p>
+<p>Давным давно, когда был разработан дизайн файловой системы Unix, были придуманы записи . и .. для облегчения навигации. Я не уверен, но кажется .. появился при переписывании Версии 2, когда в файловой системе появилась иерархия (до этого структура была совсем другой). Когда кто-то набирал <code>ls</code>, эти записи показывались на экране, поэтому Кен или Деннис добавили простую проверку в программу. Тогда всё писалось на ассемблере, но код был примерно эквивалентен чему-то вроде этого:</p>
+<pre><code>
+if (name[0] == '.') continue;
+</code></pre>
+
+<p>Этот код был слегка короче, чем должен, потому что правильно было написать:</p>
+<pre><code>if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)<br/>    continue;
+</code></pre>
+
+<p>но блин, это же было проще.</p>
+<p>Результатом были две вещи.</p>
+<p>Во-первых, был создан неприятный прецедент. Толпы других ленивых программистов порождали баги, используя то же самое упрощение. Настоящие файлы, начинающиеся со знака точки, часто пропускались, даже в тех случаях, когда должны были быть учтены.</p>
+<p>Во-вторых, что намного хуже, появилась идея «скрытых» файлов или «файлов с точкой». Как следствие, толпы других ленивых программистов стали разбрасывать файлы в домашних каталогах. У меня не так много всего установлено на машине, в которую я сейчас набираю этот текст, но мой домашний каталог содержит около сотни файлов с точкой, и я даже не знаю, что находится в большинстве из них и нужны ли они вообще. И каждое дополнительное имя файла в домашней папке замедляет работу машины, пусть не намного, но это же накапливается.</p>
+<p>Я совершенно уверен, что концепция скрытых файлов была непреднамеренной оплошностью. Это просто была ошибка.</p>
+<p>К какому количеству багов, потраченных циклов CPU и случаев человеческого разочарования (не говоря уже о плохом дизайне) привело одно маленькое упущение, случившееся 40 лет назад.</p>
+<p>Задумайтесь об этом в следующий раз, когда захотите «срезать угол» в вашем коде.</p>
+<p>(Я не спорю с теми, кто говорит, что скрытые файлы служат определенной цели, но это цели служат файлы, а не соглашение об их наименовании. Их легко можно было складывать в $HOME/cfg или в $HOME/lib, как мы и сделали в Plan 9, где нет файлов с точкой. Выводы были сделаны.)</p>
+<p>Роб Пайк. 3 августа 2012.</p>
+<p><a href="http://addmeto.cc/post/2012-08-03/">Сегодняшний набор ссылок как обычно, тут</a></p>
+            </article>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-6 columns">
+            <ul class="button-group radius">
+                <li><a href="https://coinbase.com/checkouts/85a4de3abf40136270f74111b625fbb6?c=addmetocc" target="_blank" class="button small">заБиткойнь</a></li>
+                <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=bobuk%40justos%2eorg&lc=RU&item_name=addmeto%2ecc&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" class="button small" target="_blank">заPayPalь</a></li>
+                <li><a href="#" data-reveal-id="myModal" class="button small">Я.Деньгуй</a></li>
+            </ul>
+        </div>
+        <div class="large-6 columns">
+            <a href="https://github.com/bobuk/addmeto.cc/blob/master/pages/2012-08-03-a-lesson-in-shortcuts.md" class="small button secondary radius right">ЗаGitHubить!</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="row">
+            <div class="large-12 columns">Григорий Бакунов (c) 2013, скопировано правильно.
+            </div>
+        </div>
+    </footer>
+
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter18771010 = new Ya.Metrika({id:18771010, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/18771010" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+  <script>
+  document.write('<script src=/static/' +
+  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <script src="/static/js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+
+<div id="myModal" class="reveal-modal medium">
+  <h2>Форма для Яндекс.Денег</h2>
+  <iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?uid=4100130214808&amp;default-sum=100&amp;targets=%D0%BD%D0%B0+%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0&amp;target-visibility=on&amp;project-name=Addmeto.cc&amp;project-site=http%3A%2F%2Faddmeto.cc%2F&amp;button-text=05&amp;comment=on&amp;hint=%D0%9F%D0%BE%D0%B6%D0%B5%D0%BB%D0%B0%D1%82%D1%8C+%D1%87%D0%B5%D0%B3%D0%BE-%D0%BD%D0%B8%D0%B1%D1%83%D0%B4%D1%8C+%D0%B4%D0%BE%D0%B1%D1%80%D0%BE%D0%B3%D0%BE&amp;mail=on" width="450" height="201"></iframe>
+</div>
+<ul id="drop1" class="f-dropdown" data-dropdown-content>
+  <li><a href="/">Сегодня</a></li>
+  <li><a href="/archive">Архив</a></li>
+  <li><a href="/about">О проекте</a></li>
+  <li><a href="/feed">RSS</a></li>
+</ul>
+
+</html>

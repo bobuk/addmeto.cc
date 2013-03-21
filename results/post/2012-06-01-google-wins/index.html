@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--[if IE 8]> 				 <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Бобук :: Гугл vs. Оракл: победителей не судят</title>
+  <link href='http://fonts.googleapis.com/css?family=Poiret+One&subset=latin,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/static/css/normalize.css" />
+  <link rel="stylesheet" href="/static/css/foundation.min.css" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+
+  <script src="/static/js/vendor/custom.modernizr.js"></script>
+
+</head>
+<body>
+    <div class="row top">
+        <div class="large-10 columns">
+            <a href="#" data-dropdown="drop1"><div class="header-top">Еще один линкблог</div></a>
+            <div class="header-bottom hide-for-small">Тщательно отобранные ссылки, небрежно написанные буквы</div>
+        </div>
+        <div class="large-2 columns">
+            <a href="http://twitter.com/bobuk"><img src="/static/img/bobuk.png" class="right hide-for-small"/></a>
+        </div>
+        <hr class="header"/>
+    </div>
+    <div class="row">
+        <div class="large-12 large-centered columns">
+            <a href="/2012-06-01-google-wins" ><h1 class="titles">Гугл vs. Оракл: победителей не судят</h1></a>
+            <article>
+                <p>Вчера Google выиграл критически важное для мира IT дело о копирайте на API.</p>
+<blockquote>
+<blockquote>
+<p><img alt="center" src="http://cdn.arstechnica.net/wp-content/uploads/2012/05/android-partytime.jpg" />&lt;&lt;</p>
+</blockquote>
+</blockquote>
+<p>Юридическая битва Оракл, нелепая попытка откусить кусок от вкусного рынка смартфонов, близка к завершению. Вчера федеральный судья Вильям Элзап вынес очень интересный вердикт: "До тех пор, пока конкретный исходный код, используемый для реализации метода, различается, любой может написать свою собственную реализацию функции или спецификации любых методов, используемых в Java API, в соответствии с Законом об Авторском Праве". Формулировка сложная, давайте попробуем простыми словами. Судья постановил, что спецификация не является объектом права, так как публична. И, значит, вы можете писать любую свою реализацию любого API до тех пор, пока вы не используете чужой код.</p>
+<p>Гугль скопировал некоторые названия элементов, объявления и заголовки Java API. Элзап постановил, что, несмотря на то, что Google мог переставить "некоторые методы, по-разному группируя их по классам и пакетам", общее дерево имён "всего лишь утилитарный и функциональный набор символов, каждый из которых указывает на какую-либо функцию... Повторение структуры команд необходимо для совместимости".</p>
+<p>По сути, речь идёт о полной и безоговорочной победе Гугла в битве с Ораклом, которая тянулась более 2-х лет. Причём победа и на патентном, и на копирайтном фронтах.</p>
+<h2>Метафора библиотеки</h2>
+<p>Элзап, по ходу разбирательств, сравнивает API с библиотекой, полной бумажных книг, где каждый пакет - это полка с книгами, каждый класс - книга на полке, а каждый метод - глава в книжке-инструкции, стоящей на полке. "В 37 пакетах Java и Android библиотеки организованы одинаково, но все главы в Android написаны иначе, несмотря на то, что решают они те же самые проблемы, что и в Java, и предоставляют те же самые функции".</p>
+<p>97% исходного кода в пакетах API различаются, и только 3% пересекаются, что и было поводом для заявления о нарушении копирайта. Эти три процента включают в себя названия пакетов, методов и классов, которые, как вы понимаете, не содержат в себе самостоятельной ценности. "Для того, чтобы объявить конкретную функциональность, язык [программирования] требует вполне определённой формы".</p>
+<p>Решение Элзапа было объявлено менее чем через месяц после решения Европейского суда, также постановившего, что API не могут быть защищены авторским правом, потому что это было бы "монополизированием идеи".</p>
+<h2>Что дальше?</h2>
+<p>В конце концов, Оракл потратил много миллионов (буквально, десятки миллионов долларов) на их юридический поход против Гугла и вернулся ни с чем. Компания просканировала 15 миллионов строк кода Андроида и нашла одну простую девятистрочную функцию, которая была скопирована с Java. Кстати, этого кода уже нет в Android, Oracle придётся ограничиться законной компенсацией за копирование, не превышающей $150 тыс., а, возможно, и меньше.</p>
+<p>Оракл пообещал обжаловать это решение, чтобы продолжать поддержку "расширения Java-сообщества" из более 9 миллионов разработчиков. "Суд опирается на идею совместимости, игнорируя тот факт, что Google разрушил совместимость между Android и всеми остальной платформой Java", говорит Oracle в своем заявлении.</p>
+<p>Своей реализацией Google намеренно фрагментировал Java и разрушил концепцию "написал один раз, работает везде".</p>
+<p>Чтобы получить какие-либо копирайтные отчисления от Google, Ораклу не только придётся оспорить решение Элзапа по API, но и выиграть целое новое дело в суде. Это займёт годы и выглядит весьма маловероятным на данном этапе.</p>
+<p>Для Java-программистов всего мира это не меняет практически ничего. Если бы Oracle победил, они смогли бы заставить любого разработчика опенсорсного софта на Java платить за каждую установку. Некоторые утверждают что победа Oracle отпугнула бы программистов от Java, но, кажется, это всего лишь предположения.</p>
+<p>Решение о компенсации убытков Oracle состоится 21 июня, судья будет тот же. Даже с этой единственной, действительно скопированной функцией, по мнению Элзапа, Оракл перегибает палку. Он посвятил целый раздел вчерашнего решения функции rangeCheck(), называя копирование "надуманным и раздутым". Джошуа Блох, инженер Google, закодивший эту функцию, написал её в свободное от работы время, как часть большого блока кода для свободной реализации Java. "Это был невинный и незначительный случай копирования маленького кусочка в огромном куске кода", заключил Элзап.</p>
+<div style="align: right; font-size: 0.7em">Это очень вольный перевод <a href="http://arstechnica.com/tech-policy/2012/05/google-wins-crucial-api-ruling-oracles-case-decimated/">статьи из ArsTechnica</a>, разбавленный моими комментариями и мнениями. Поправляйте как обычно, на гитхабе.</div>
+            </article>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-6 columns">
+            <ul class="button-group radius">
+                <li><a href="https://coinbase.com/checkouts/85a4de3abf40136270f74111b625fbb6?c=addmetocc" target="_blank" class="button small">заБиткойнь</a></li>
+                <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=bobuk%40justos%2eorg&lc=RU&item_name=addmeto%2ecc&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" class="button small" target="_blank">заPayPalь</a></li>
+                <li><a href="#" data-reveal-id="myModal" class="button small">Я.Деньгуй</a></li>
+            </ul>
+        </div>
+        <div class="large-6 columns">
+            <a href="https://github.com/bobuk/addmeto.cc/blob/master/pages/2012-06-01-google-wins.md" class="small button secondary radius right">ЗаGitHubить!</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="row">
+            <div class="large-12 columns">Григорий Бакунов (c) 2013, скопировано правильно.
+            </div>
+        </div>
+    </footer>
+
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter18771010 = new Ya.Metrika({id:18771010, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/18771010" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+  <script>
+  document.write('<script src=/static/' +
+  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <script src="/static/js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+
+<div id="myModal" class="reveal-modal medium">
+  <h2>Форма для Яндекс.Денег</h2>
+  <iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?uid=4100130214808&amp;default-sum=100&amp;targets=%D0%BD%D0%B0+%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0&amp;target-visibility=on&amp;project-name=Addmeto.cc&amp;project-site=http%3A%2F%2Faddmeto.cc%2F&amp;button-text=05&amp;comment=on&amp;hint=%D0%9F%D0%BE%D0%B6%D0%B5%D0%BB%D0%B0%D1%82%D1%8C+%D1%87%D0%B5%D0%B3%D0%BE-%D0%BD%D0%B8%D0%B1%D1%83%D0%B4%D1%8C+%D0%B4%D0%BE%D0%B1%D1%80%D0%BE%D0%B3%D0%BE&amp;mail=on" width="450" height="201"></iframe>
+</div>
+<ul id="drop1" class="f-dropdown" data-dropdown-content>
+  <li><a href="/">Сегодня</a></li>
+  <li><a href="/archive">Архив</a></li>
+  <li><a href="/about">О проекте</a></li>
+  <li><a href="/feed">RSS</a></li>
+</ul>
+
+</html>
