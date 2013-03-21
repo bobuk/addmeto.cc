@@ -1,8 +1,9 @@
 #!v/bin/python
 # -*- mode: python -*-
 
-import markdown
-import os, sys, shutil
+import os, sys, shutil, gzip
+from datetime import datetime
+import markdown, pyatom
 
 def source_constructor(filename):
     if not filename.endswith('.md'):
@@ -76,6 +77,9 @@ def write(src):
     with open(dest, 'w') as fl:
         fl.write(run)
 
+def pages():
+    write('pages/about.md')
+
 def archive(sources):
     res = ['# Архив', '', '']
     for post in reversed(sources):
@@ -84,6 +88,25 @@ def archive(sources):
     with open('pages/archive.md', 'w') as fl:
         fl.write('\n'.join(res))
     write('pages/archive.md')
+
+def rss(sources):
+    feed = pyatom.AtomFeed(title="Еще один линкблог",
+                feed_url="http://addmeto.cc/feed",
+                url="http://addmeto.cc",
+                author="Григорий Бакунов")
+
+    for post in list(reversed(sources))[:10]:
+        p = load_post(post)
+        p['updated'] = datetime.fromtimestamp(os.path.getmtime(post))
+        feed.add(title=p['title'],
+             content=p['text'],
+             content_type="html",
+             author='Бобук',
+             url="http://addmeto.cc/" + p["file"],
+             updated=p["updated"]
+        )
+    with open('results/feed', 'wb') as fl:
+        fl.write(gzip.compress(bytes(feed.to_string(), 'utf-8')))
 
 def main(args):
     sources = get_source_list()
@@ -95,8 +118,15 @@ def main(args):
     if last in updated:
         sys.stdout.write('>> Index page updated to ' + last + '\n')
         shutil.copy2(dest_constructor(last), 'results/index.html')
-    if len(updated) > 1 and updated[0] != last:
+    if (len(updated) > 1 and updated[0] != last) or 'archive' in args:
         archive(sources)
+        sys.stdout.write('>> Archive updated\n')
+    if len(updated) > 0 or 'rss' in args:
+        rss(sources)
+        sys.stdout.write('>> RSS updated\n')
+    if 'pages' in args:
+        pages()
+        sys.stdout.write('>> Pages updated\n')
 
 if __name__ == '__main__':
     main(sys.argv[1:])
