@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--[if IE 8]> 				 <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Бобук :: ---</title>
+  <link href='http://fonts.googleapis.com/css?family=Poiret+One&subset=latin,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/static/css/normalize.css" />
+  <link rel="stylesheet" href="/static/css/foundation.min.css" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+
+  <script src="/static/js/vendor/custom.modernizr.js"></script>
+
+</head>
+<body>
+    <div class="row top">
+        <div class="large-10 columns">
+            <a href="#" data-dropdown="drop1"><div class="header-top">Еще один линкблог</div></a>
+            <div class="header-bottom hide-for-small">Тщательно отобранные ссылки, небрежно написанные буквы</div>
+        </div>
+        <div class="large-2 columns">
+            <a href="http://twitter.com/bobuk"><img src="/static/img/bobuk.png" class="right hide-for-small"/></a>
+        </div>
+        <hr class="header"/>
+    </div>
+    <div class="row">
+        <div class="large-12 large-centered columns">
+            <a href="/2012-03-14" ><h1 class="titles">---</h1></a>
+            <article>
+                <p>Title: s1e14. скоро я перестану их нумеровать<br />
+Date: 2012-03-14<br />
+Slug: 2012-03-14</p>
+<hr />
+<h3>Эхо вчерашнего взрыва</h3>
+<p>Про патенты и суд Яху с Фейсбуком. Постараюсь завтра про это уже не писать. Хотя нет, постараюсь держать вас в курсе :)</p>
+<ul>
+<li>Некоторые пишут что Яху затеяло <a href="http://www.feld.com/wp/archives/2012/03/games-where-the-only-winning-move-is-not-to-play.html">игру, в которой только один способ выиграть - не играть</a>. В общем картина мира после апокалипсиса.</li>
+<li><a href="http://www.avc.com/a_vc/2012/03/yahoo-crosses-the-line.html">Яху пересек границу (у реки)</a> - "но вообще, я их всех ненавижу, они ничего нового не придумали и вообще мертвы для меня", пишет Фред Уилсон из Union Square Ventures</li>
+<li><a href="http://www.wired.com/epicenter/2012/03/opinion-baio-yahoo-patent-lie/">Как Яху превратила мою работу в оружие</a> - откровения Энди Бэйо, автора проекта upcoming.org, который был куплен Yahoo в 2005ом.</li>
+<li>А Марк Кьюбэн согласен со мной. <a href="http://blogmaverick.com/2012/03/13/i-hope-yahoo-crushes-facebook-in-its-patent-suit/">"Я надеюсь что Яху раздавит Фейсбук"</a>, пишет он. Но вообще пост полон сарказма :)</li>
+</ul>
+<h3>Браузеры и мобильные</h3>
+<ul>
+<li><a href="http://www.extremetech.com/computing/122289-microsoft-hints-that-windows-8-will-run-windows-phone-7-apps">Майкрософт намекнули, что Windows 8 будет запускать приложения для WP7</a>. Кстати, похоже что слухи о полной несовместимости API WP7 и WP8 это правда.</li>
+<li><a href="http://www.zdnet.com/blog/security/microsoft-warns-expect-exploits-for-critical-windows-worm-hole/10745">Майкрософт предупреждает: после такого дождя ждите хороший отёл</a>. Ну, в смысле, т.к. куча людей еще не накатили критический апдейт MS12-020, явно сейчас пройдет эпидемия нового червя. Дырка, если что, в RDP.</li>
+<li><a href="https://groups.google.com/a/googleproductforums.com/forum/#!category-topic/checkout-merchant/selling-with-google-checkout/AM5NpAx6wpw">Сраница из 500+ сообщений</a>, где европейские разработчики под андроид плачут. Нет, с платформой всё так, просто почему-то им не приходят деньги из Андроид Маркета.</li>
+<li><a href="http://thenextweb.com/apple/2012/03/13/the-ftc-subpoena-of-apple-could-spell-the-end-of-googles-default-search-status-on-the-iphone/">Гугл может потерять дефолтный поиск в iPhone</a>, не без оснований считает tnw.</li>
+</ul>
+<h3>Технологии</h3>
+<ul>
+<li>Боже! <a href="http://deallocatedobjects.com/posts/new-objective-c-literal-syntax-for-nsarray,-nsdictionary-&amp;-nsnumber">Наконец-то, нормальный синтаксис для инициализации некоторых ObjectiveC классов</a>. Оцените пример:</li>
+</ul>
+<p><code>NSArray *doctors = @[@"Matt Smith", @"David Tennant", @"Tom Baker"];</code> </p>
+<p>вместо старого</p>
+<p><code>NSArray *doctors = [NSArray arrayWithObjects:@"Matt Smith", @"David Tennant", @"Tom Baker", nil];</code></p>
+<p>кстати, по тексту примера тоже понятно, что автор - наш человек, да? Патчи в llvm, уже приняты в основную ветку.</p>
+<ul>
+<li><a href="http://ql.io/">Обнаружил для себя ql.io</a>. Это такой метод для построения API и обращения к ним в стиле SQL. Буду изучать.</li>
+<li><a href="https://developers.google.com/events/io/">Гугл объявил сроки Google I/O</a> - 27-29 июня, Сан-Франциско. Кстати, <a href="http://code.google.com/codejam/">регистрация на Google Code Jam 2012 открыта</a>.</li>
+<li><a href="http://www.playframework.org/">Вышел второй релиз фреймворка Play!</a>, единственный приемлимый для меня вариант, чтобы писать веб-приложения на Scala. Ну, благодаря принципам скалы, можно и на обычной Java использовать Play! Чуть подробнее <a href="http://blog.typesafe.com/introducing-play-20">в блоге TypeSafe</a></li>
+<li><a href="http://www.codinghorror.com/blog/2012/03/rubber-duck-problem-solving.html">Метод решения проблем обращением к резиновой уточке</a>. Хорошая статья, объясняющая как именно работает классический Rubber Duck Debugging.</li>
+<li><a href="http://blogs.atlassian.com/2012/03/git-vs-mercurial-why-git/">Гит и Меркуриал. Чем хорош Git?</a> пишут ребята из Atlassian. В общем, ребята, хана bitbucket'у!</li>
+</ul>
+<h3>Гаджеты</h3>
+<ul>
+<li><a href="http://www.getinpulse.com/">Еще одни часы-нотификатор</a>, коннектящиеся к телефону (на андроиде и блекберри). Но вообще они и какие-то приложения умеют на себе запускать. Сколько они на батарейке живут, интересно?</li>
+<li><a href="http://www.extremetech.com/extreme/122231-solar-panels-made-with-ion-cannon-are-cheap-enough-to-challenge-fossil-fuels">Новая солнечная батарея сделанная с помощью ионной пушки и лазерной нарезки</a> - говорят достаточно эффективна, чтобы заменить дизель-генератор. </li>
+<li><a href="http://arstechnica.com/gaming/news/2012/03/virtual-reality-that-doesnt-suck-my-time-inside-half-life-2.ars">Неотстойная виртуальная реальность: как я полужил в HalfLife2</a>. Как чувак рубился в HL2 с помощью наголовных мониторов и пушки от PS3.</li>
+</ul>
+<h3>Интернеты</h3>
+<ul>
+<li><a href="http://blogs.msdn.com/b/jw_on_tech/archive/2012/03/13/why-i-left-google.aspx">Джеймс Виттакер, сочинение на тему "Почему я ушел из Гугла"</a>. И он подтверждает мою теорию: последние 3 года гугл совсем не торт :( Раньше это была компания мечты, а сейчас…</li>
+<li>И как бы подтверждая это мнение, <a href="http://siliconfilter.com/googles-vic-gundotra-majority-of-content-shared-on-google-is-not-public-readwrite-api-not-coming-anytime-soon/">Вик Гундотра, "API для работы с G+ не будет в ближайшее время "</a>. Ну, и смысл в этом вашем гуглкрест?</li>
+<li>И продолжая тему, чуваки из <a href="http://www.wired.com/wiredenterprise/2012/03/microsoft-bing-v-google/">Wired: Майкрософт сказал, что "безкaфеиновый Bing так же хорош, как Google"</a>. Речь, конечно, о том, что программа Caffein, только мешает качеству поиска Google.</li>
+<li><a href="http://photoshopetiquette.com/">40 правил для дизайнеров</a>, которые хотят быть любимы верстальщиками. Во многих смыслах этой фразы.</li>
+</ul>
+<h3>Проектное</h3>
+<ul>
+<li><a href="http://www.elezea.com/2012/03/sticking-with-instapaper/">Почему я запал на Instapaper?</a> и короткий ответ - потому что автор инстапапера - Марко Армент, живой человек, а не бездушная компания. Он имеет мнение и с за ним приятно следить.</li>
+<li><a href="http://en.blog.wordpress.com/2012/03/13/posterous-joins-twitter/">Вчера твиттер купил Posterous, ребята из Wordpress радуются</a>. Особенно им радостно потому, что количество миграций с постеруса на вордпресс выросло в 2.5 раза</li>
+<li><a href="http://s0rce.com/issue-event/republican-primary">Новый проект s0rce по новому визуализирует данные</a>, связанные с событиями. Чуть подробнее <a href="http://s0rce.com/blog/post/fixing-the-news">об их идее у них в блоге</a>.</li>
+</ul>
+<h3>Разное</h3>
+<ul>
+<li>Эпичный фанфик <a href="http://hpmor.com/">Гарри Поттер и Методы Рациональности</a>. Прочитайте хотябы название глав!</li>
+</ul>
+<p><em>p.s. спал мало,  работал много. Если есть неточности - поправляйте меня.</em></p>
+            </article>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-6 columns">
+            <ul class="button-group radius">
+                <li><a href="https://coinbase.com/checkouts/85a4de3abf40136270f74111b625fbb6?c=addmetocc" target="_blank" class="button small">заБиткойнь</a></li>
+                <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=bobuk%40justos%2eorg&lc=RU&item_name=addmeto%2ecc&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" class="button small" target="_blank">заPayPalь</a></li>
+                <li><a href="#" data-reveal-id="myModal" class="button small">Я.Деньгуй</a></li>
+            </ul>
+        </div>
+        <div class="large-6 columns">
+            <a href="https://github.com/bobuk/addmeto.cc/blob/master/pages/2012-03-14.md" class="small button secondary radius right">ЗаGitHubить!</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="row">
+            <div class="large-12 columns">Григорий Бакунов (c) 2013, скопировано правильно.
+            </div>
+        </div>
+    </footer>
+
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter18771010 = new Ya.Metrika({id:18771010, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/18771010" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+  <script>
+  document.write('<script src=/static/' +
+  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <script src="/static/js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+
+<div id="myModal" class="reveal-modal medium">
+  <h2>Форма для Яндекс.Денег</h2>
+  <iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?uid=4100130214808&amp;default-sum=100&amp;targets=%D0%BD%D0%B0+%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0&amp;target-visibility=on&amp;project-name=Addmeto.cc&amp;project-site=http%3A%2F%2Faddmeto.cc%2F&amp;button-text=05&amp;comment=on&amp;hint=%D0%9F%D0%BE%D0%B6%D0%B5%D0%BB%D0%B0%D1%82%D1%8C+%D1%87%D0%B5%D0%B3%D0%BE-%D0%BD%D0%B8%D0%B1%D1%83%D0%B4%D1%8C+%D0%B4%D0%BE%D0%B1%D1%80%D0%BE%D0%B3%D0%BE&amp;mail=on" width="450" height="201"></iframe>
+</div>
+<ul id="drop1" class="f-dropdown" data-dropdown-content>
+  <li><a href="/">Сегодня</a></li>
+  <li><a href="/archive">Архив</a></li>
+  <li><a href="/about">О проекте</a></li>
+  <li><a href="/feed">RSS</a></li>
+</ul>
+
+</html>

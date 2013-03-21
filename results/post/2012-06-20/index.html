@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!--[if IE 8]> 				 <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<head>
+	<meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>Бобук :: О новой почте в Windows 8</title>
+  <link href='http://fonts.googleapis.com/css?family=Poiret+One&subset=latin,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/static/css/normalize.css" />
+  <link rel="stylesheet" href="/static/css/foundation.min.css" />
+  <link rel="stylesheet" href="/static/css/main.css" />
+
+  <script src="/static/js/vendor/custom.modernizr.js"></script>
+
+</head>
+<body>
+    <div class="row top">
+        <div class="large-10 columns">
+            <a href="#" data-dropdown="drop1"><div class="header-top">Еще один линкблог</div></a>
+            <div class="header-bottom hide-for-small">Тщательно отобранные ссылки, небрежно написанные буквы</div>
+        </div>
+        <div class="large-2 columns">
+            <a href="http://twitter.com/bobuk"><img src="/static/img/bobuk.png" class="right hide-for-small"/></a>
+        </div>
+        <hr class="header"/>
+    </div>
+    <div class="row">
+        <div class="large-12 large-centered columns">
+            <a href="/2012-06-20" ><h1 class="titles">О новой почте в Windows 8</h1></a>
+            <article>
+                <p>Я не часто так делаю, и не часто так буду делать. <a href="http://blogs.msdn.com/b/b8/archive/2012/06/14/building-the-mail-app.aspx">Но пост в блоге Майкрософт о том, как выглядит почта в Windows 8,</a> настолько мне понравился, что я потратил кучу времени на разглядывание этого приложения внутри последнего релиза. А сейчас я потрачу ваше время и заставлю вас прочитать моё мнение по этому поводу.</p>
+<p><img alt="center" src="http://blogs.msdn.com/cfs-file.ashx/__key/communityserver-blogs-components-weblogfiles/00-00-01-29-43-metablogapi/0842.Three_2D00_pane_2D00_design_2D00_of_2D00_Mail_5F00_thumb_5F00_3C7EFC88.png" /></p>
+<p>Начнем с фактов, которые не всем очевидны.</p>
+<ul>
+<li><strong>У многих людей более одного аккаунта</strong>. Даже больше того, у большинства людей более одного аккаунта. Типичный случай - рабочий, домашний и для соцсетей. Я знаю человека, у которого 3 десятка емейлов. У меня 4 почтовых ящика, для разных нужд. Кстати, а у вас сколько?</li>
+<li><strong>Многие получают очень много писем</strong>. Мой лимит - около 2k5 писем в день. Много это? Видимо много, майкрософт считает что "активные пользователи" почты получают "более 2100 писем в день". Думаю что для нормальных людей эта цифра ниже, где-то 30-40 писем. Причем большая часть этих писем - нотификации от сервисов.</li>
+<li><strong>Почти никто не пользуется папками</strong>. Как бы удивительно это ни было, но большая часть людей совсем не утруждает себя "разбором" почты. Поэтому нет смысла оптимизировать приложение для работы с сотнями фолдеров в одном окне.</li>
+<li><strong>Почта теперь реалтайм</strong>. Это очень спорный момент. Действительно, многие сейчас ожидают, что ты ответишь на письмо быстро. Однако есть мессенджеры, с нотификацией об онлайновости оппонента.</li>
+<li><strong>Пользователи ожидают совместного использования настольной и мобильной почты</strong>. Тут не поспоришь. Даже добавить нечего.</li>
+</ul>
+<p>Это предпосылки. С ними можно не соглашаться, но моя статистика их подтверждает.</p>
+<p>А теперь, давайте посмотрим, что же Microsoft сделали, для того чтобы решить проблемы существующих почт.</p>
+<p>Взгляните на верхнюю картинку, потом вернитесь сюда. Это классический 3-pane view, но с некоторыми доработками. Смотрите, слева есть колонка с аккаунтами <em>и</em> папками, в стиле "аккордеон". Да, много папок сюда не влезет, но зато я вижу все свои аккаунты, а так же каунтер непрочтенных сообщений в каждом. Круто? Круто. Ай лайк ит.</p>
+<p>Кстати, заметьте, приложение полноэкранно по умолчанию, в нем спрятано меню и нет привычных для десктопа тулбаров. Всё минималистично, в стиле Metro, и очень похоже на телефонную версию.</p>
+<p>Список писем содержит аватарку, имя отправителя, сабжект, дату отправки и флаги - для каждого письма. Ребята в майкрософт гордятся, что вложили максимум информации в этот список. Я же считаю, что это самая большая их недоработка, потому что есть ещё т. н. "firstline", которую неплохо бы показывать в списке писем. В остальном, приятно, что этот список на 95% повторяет аналогичный в Яндекс.Почте.</p>
+<p>При выделении нескольких писем из списка в нижней части экрана выезжает панель, позволяющая выполнить с письмами стандартные действия, правда с нестандартными названиями. Например, вместо Reply там написано Feedback, причем почему-то не для всех писем. Чтобы выполнить действия с одним письмом вам придётся воспользоваться обычными методами - правой клавишей, шорткатами или кнопками-действиями на панели чтения письма.</p>
+<p>Reading Pane, т.е. место, где показывается само письмо, не такое интересное. Заметная часть его отдана под кнопки "ответить, отфорвардить, удалить", и служебные части письма, вроде полей From и Subject. С одной стороны, наконец-то кто-то решился и оторвал лишние слова, теперь там написано не "From: Бобук", а просто Бобук. С другой - неприятна полумера, я бы оторвал вообще эти поля, ведь они уже показываются слева, в списке писем. Кажется, что поле фром оставлено в письме, чтобы на него можно было щелкнуть и посмотреть на статус человека в live messenger, другой причины не вижу.</p>
+<p><img alt="center" src="http://blogs.msdn.com/cfs-file.ashx/__key/communityserver-blogs-components-weblogfiles/00-00-01-29-43-metablogapi/0842.Writing_2D00_an_2D00_email_5F00_thumb_5F00_6612C7BB.png" /></p>
+<p>Очень крутым и "альтернативным" получилось окно создания письма. Обратите внимание на левую колонку. Ведь так логично -  мне всегда не хватает места по вертикали при написании писем. Поэтому все служебные поля собраны в своеобразную карточку и перенесены налево, вся правая часть предназначена для письма и служебных команд. Панель управления рич-текстом появляется, только если ты выделяешь кусок текста, но все стандартные Ctrl+B и прочие - прекрасно работают. Аттачменты и прочая мишура тоже показываются слева. Я не устану повторять как это прекрасно :)</p>
+<p>Еще новый Mail явно показывает, что умеет работать в условиях разных интернетов. Обнаружив проводное соединение (на самом деле - его эмуляцию в Parallels) приложение внезапно предупредило меня, что интернет у меня быстрый, поэтому оно сейчас срочно скачает все письма :) Приятно; надеюсь, по gprs оно так качать не станет.</p>
+<p>Безусловно, есть и минусы. Например настроить его на IMAP от gmail не удалось - только на Exchange. Еще приложение совсем не понимает, что в русских письмах есть проблемы разных кодировок. Нет возможности приостановить процесс синхронизации с сервером. Нет удобной системы фильтров. Нет быстрого способа пометить письмо как спам. Да много чего нет. Но как минималистичная замена "большим" почтовым клиентам - это очень крутая попытка. Очень. Как бы я хотел, чтобы Apple пошла и слизала хорошие решения из этого приложения.</p>
+<p>В общем хочется поздравить Microsoft с первым приложением в составе Windows 8, которым хочется пользоваться. Да, оно не без недостатков, но это настоящий прорыв, особенно для компании, которая последние 20 лет не выпускала ни одной удобной программы.</p>
+<p>Утомились? Ну, давайте по ссылочкам попрыгаем.</p>
+<hr />
+<h2>Для всех</h2>
+<ul>
+<li><a href="http://gmailblog.blogspot.com/2012/06/custom-themes-in-gmail.html">В продолжение темы почты - в gmail появилась возможность делать кастомные темы оформления</a>. К сожалению, это значит что можно тупо поменять фоновую картинку, больше ничего. Но это тоже интересно. #gmail</li>
+<li><a href="http://techcrunch.com/2012/06/19/ex-googlers-launch-mightytext-an-imessage-for-android-users/">Бывшие гуглеры запустили приложение mightytext</a>, очень похожее на iMessage, только для Android.  На самом деле всё не похоже на iMessage, это тупо десктопное приложение, которое позволяет работать с телефоном из браузера. Читать-отправлять смс, просматривать звонки и тп. #android #startup</li>
+<li><a href="http://sivers.org/laboratory">Старая статья Дэвида Сиверса, о том, зачем ему нужно заниматься бизнесом</a>. Я её прочитал пару лет назад и еще тогда понял. Для меня бизнес это тоже поле для экспериментов. Бизнес как способ познавать окружающий мир. #business</li>
+<li><a href="http://techcrunch.com/2012/06/19/a-redesigned-slicker-paypal-is-coming-tomorrow-some-seeing-new-look-today/">Теккранч нашёл скриншоты завтрашнего редизайна payPal</a>. Если бы он еще и мои завтрашние деньги нашёл - я бы очень порадовался. А так - ничего себе дизайн, но ничего особенного. #paypal</li>
+<li><a href="http://www.nczonline.net/blog/2012/06/19/web-developers-are-software-engineers-too/">Обиженные веб-разработчики пишут, что они тоже инженеры-программисты</a>. В глобальном смысле - да. И те, что не пишут на PHP. #hate #programming</li>
+</ul>
+<h2>На грани</h2>
+<ul>
+<li>Тема, которой я вообще не понимаю. <a href="http://weblog.clarkparsia.com/2012/06/18/stardog-10">Кларк Парсия запустил в <strong>продажу</strong> программу Stardog 1.0</a>. Это простейшая RDF-база, всё как положено, написана на Java, SPARQL для запросов, не требует настройки и т. п. Причем он реально надеется её продавать. Не знаю даже, что еще добавить. #rdf #madness</li>
+<li><a href="http://www.buildroid.org/blog/?p=198">Для андроидов на x86 платформе есть эмулятор ARM</a>. Ну, логично, если люди ленятся пересобирать - давайте сэмулируем, тем более что эмуляции подлежат только нативные куски. #android #x86 #mobile</li>
+<li><a href="http://www.agilesysadmin.net/ec2-outage-lessons">Какие выводы надо сделать из недавнего падения Амазона</a>. Откровения крутого сисадмина, с моралью «амазон не виноват, виноваты криворукие админы». А что, я согласен. #amazon #outage</li>
+<li><a href="http://www.phoronix.com/scan.php?page=news_item&amp;px=MTEyMjk">Nvidia ответила на «нападки» Торвальдса</a>, который послал их нафиг. Ну, мягко говоря. #nvidia #linux</li>
+</ul>
+<h2>Для гиков</h2>
+<ul>
+<li><a href="http://blog.regehr.org/archives/482">Маленькая функция на C, пришедшая прямо из ада</a>. Пост старый, всплыл недавно. Кажется, я нашел новую задачку для собеседований по C/C++, на знание того, как работают компиляторы. #clang #bug #code</li>
+<li><a href="http://paulrouget.com/e/es6/">Почти туториал по новым фичам JavaScript, доступным в Mozilla Nightly</a>. По фичам языка, не по API. Представляете, скоро можно будет как у людей писать, <code>for (let x of arr)</code>. #javascript</li>
+<li><a href="http://late.am/post/2012/06/18/what-the-heck-is-an-xrange">Интересный вопрос: как реализовать xrange(), не используя списки и перечисляемые типы</a>. Причём, речь о нормальном xrange, не о банальном (1..n). #python #code</li>
+<li><a href="http://peterhansen.ca/blog/blackberry-py-preview.html">Для блекберри можно писать на питоне?</a> Оказывается bbx-py живёт уже несколько лет, а я не замечал. #bb #python</li>
+</ul>
+<h2>Разное</h2>
+<ul>
+<li><a href="http://designtaxi.com/news/352814/China-Plans-To-Build-The-World-s-Tallest-Building-In-90-Days/">Китай собирается построить самое высокое здании в мире за 3 месяца</a>. 838 метров высотой. Кажется, я знаю, куда хочу съездить через пару лет. Если эта махина не упадёт, конечно. #fun</li>
+</ul>
+<h2>Видео</h2>
+<ul>
+<li><a href="http://science.slashdot.org/story/12/06/14/2032230/elon-musk-shows-off-the-dragon-capsule-back-from-space-video">Капсула Dragon приземлилась</a>. #scifi</li>
+<li><a href="https://developer.apple.com/videos/wwdc/2012/">Вывесли keynote с WWDC</a>. Еще не смотрел. #apple</li>
+<li><a href="http://vimeo.com/44202270">Лего сделали машину Тьюринга из Лего</a>. Не рекурсия, нет. #lego</li>
+</ul>
+            </article>
+        </div>
+    </div>
+    <div class="row">
+        <div class="large-6 columns">
+            <ul class="button-group radius">
+                <li><a href="https://coinbase.com/checkouts/85a4de3abf40136270f74111b625fbb6?c=addmetocc" target="_blank" class="button small">заБиткойнь</a></li>
+                <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=bobuk%40justos%2eorg&lc=RU&item_name=addmeto%2ecc&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" class="button small" target="_blank">заPayPalь</a></li>
+                <li><a href="#" data-reveal-id="myModal" class="button small">Я.Деньгуй</a></li>
+            </ul>
+        </div>
+        <div class="large-6 columns">
+            <a href="https://github.com/bobuk/addmeto.cc/blob/master/pages/2012-06-20.md" class="small button secondary radius right">ЗаGitHubить!</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="row">
+            <div class="large-12 columns">Григорий Бакунов (c) 2013, скопировано правильно.
+            </div>
+        </div>
+    </footer>
+
+<!-- Yandex.Metrika counter --><script type="text/javascript">(function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter18771010 = new Ya.Metrika({id:18771010, webvisor:true, clickmap:true, trackLinks:true, accurateTrackBounce:true}); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = (d.location.protocol == "https:" ? "https:" : "http:") + "//mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");</script><noscript><div><img src="//mc.yandex.ru/watch/18771010" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+  <script>
+  document.write('<script src=/static/' +
+  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+  '.js><\/script>')
+  </script>
+  
+  <script src="/static/js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
+</body>
+
+<div id="myModal" class="reveal-modal medium">
+  <h2>Форма для Яндекс.Денег</h2>
+  <iframe frameborder="0" allowtransparency="true" scrolling="no" src="https://money.yandex.ru/embed/donate.xml?uid=4100130214808&amp;default-sum=100&amp;targets=%D0%BD%D0%B0+%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D0%BD%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0&amp;target-visibility=on&amp;project-name=Addmeto.cc&amp;project-site=http%3A%2F%2Faddmeto.cc%2F&amp;button-text=05&amp;comment=on&amp;hint=%D0%9F%D0%BE%D0%B6%D0%B5%D0%BB%D0%B0%D1%82%D1%8C+%D1%87%D0%B5%D0%B3%D0%BE-%D0%BD%D0%B8%D0%B1%D1%83%D0%B4%D1%8C+%D0%B4%D0%BE%D0%B1%D1%80%D0%BE%D0%B3%D0%BE&amp;mail=on" width="450" height="201"></iframe>
+</div>
+<ul id="drop1" class="f-dropdown" data-dropdown-content>
+  <li><a href="/">Сегодня</a></li>
+  <li><a href="/archive">Архив</a></li>
+  <li><a href="/about">О проекте</a></li>
+  <li><a href="/feed">RSS</a></li>
+</ul>
+
+</html>
