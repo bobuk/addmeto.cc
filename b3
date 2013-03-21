@@ -39,7 +39,7 @@ def get_updated_list(sources = get_source_list()):
 def load_post(filename):
     date = source_deconstructor(filename)
     if len(date) > len('0000-00-00'):
-        year, month, day, subtitle = date.split('-', 4)
+        year, month, day, subtitle = date.split('-', 3)
         date = year + '-' + month + '-' + day
     data = open(filename, 'r').read()
     title, data = data.split('\n', 1)
@@ -84,7 +84,7 @@ def archive(sources):
     res = ['# Архив', '', '']
     for post in reversed(sources):
         p = load_post(post)
-        res.append('* [{title}](/{file}) ({date}))'.format_map(p))
+        res.append('* [{title}](/{file}) ({date})'.format_map(p))
     with open('pages/archive.md', 'w') as fl:
         fl.write('\n'.join(res))
     write('pages/archive.md')

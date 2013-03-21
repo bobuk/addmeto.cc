@@ -5,6 +5,7 @@ h1, h2, h3, h4, h5 {
 .top {
     margin-top: 1em;
 }
+
 article {
 padding: 1em 1em 1em 1em;
 background: rgb(251,253,255); /* Old browsers */

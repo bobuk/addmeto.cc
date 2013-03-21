@@ -1,0 +1,5 @@
+#!/bin/bash
+cd results
+s3cmd --no-preserve --recursive --exclude=feed sync * s3://addmeto.cc/
+s3cmd --no-preserve --add-header=Content-Encoding:gzip sync -m 'text/xml' sync feed s3://addmeto.cc/
+cd ..
