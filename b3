@@ -44,7 +44,7 @@ def load_post(filename):
     data = open(filename, 'r').read()
     title, data = data.split('\n', 1)
     if title.startswith('#'):
-        junk, title = title.split(maxsplit=1)
+        junk, title = title.split(' ', 1)
     return {
         'title': title.strip(),
         'file': source_deconstructor(filename),
