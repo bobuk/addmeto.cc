@@ -6,3 +6,5 @@ results/2*/
 results/static/
 pages/archive.md
 .idea
+*.sublime-*
+v
