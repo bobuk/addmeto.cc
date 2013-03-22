@@ -79,6 +79,8 @@ mark {
     text-rendering: optimizeLegibility;
     color: #8189d8;
     margin-top: 0.5em;
+    
+    margin-bottom: .7em; /* сделать отбивку лучше, чтобы не прилипала */
 }
 
 hr.header {
