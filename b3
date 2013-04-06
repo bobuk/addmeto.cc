@@ -5,6 +5,8 @@ import os, sys, shutil, gzip
 from datetime import datetime
 import markdown, pyatom
 
+TEMPLATE = 'templates/index.html'
+
 def source_constructor(filename):
     if not filename.endswith('.md'):
         filename = filename + '.md'
@@ -29,10 +31,11 @@ def get_source_list():
 
 def get_updated_list(sources = get_source_list()):
     rebuild = []
+    template_ts = os.path.getmtime(TEMPLATE)
     for fl in sources:
         dest = dest_constructor(fl)
         if not os.path.isfile(dest) or \
-            os.path.getmtime(dest) < os.path.getmtime(fl):
+            os.path.getmtime(dest) < max(os.path.getmtime(fl), template_ts):
                 rebuild.append( fl )
     return rebuild
 
@@ -61,7 +64,7 @@ def markify(text):
     return markdown.markdown(text, [MarkExtension(), 'footnotes', 'fenced_code', 'codehilite', 'tables', 'extra', 'nl2br'])
 
 def template(filename):
-    body = open('templates/index.html', 'r').read()
+    body = open(TEMPLATE, 'r').read()
     dv = load_post(filename)
     for key in dv:
         body = body.replace('@' + key + '@', dv[key])
