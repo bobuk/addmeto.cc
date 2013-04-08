@@ -5,6 +5,10 @@
 <head>
 	<meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
+  <meta name="kittycheck_parent" content=".kitty" />
+  <meta name="kittycheck_checkin_color" content="#2D3793" />
+  <meta name="kittycheck_position" content="left=0,top=0" />
+  <meta name="kittycheck_rumble" content="true" />
   <title>Бобук :: @title@</title>
   <link href='http://fonts.googleapis.com/css?family=Poiret+One&subset=latin,cyrillic,latin-ext' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="/static/css/normalize.css" />
@@ -12,7 +16,7 @@
   <link rel="stylesheet" href="/static/css/main.css" />
 
   <script src="/static/js/vendor/custom.modernizr.js"></script>
-
+  <script src="http://kittycheck.com/js/inject.js"></script>
 </head>
 <body>
     <div class="row top">
@@ -21,6 +25,7 @@
             <div class="header-bottom hide-for-small">Тщательно отобранные ссылки, небрежно написанные буквы</div>
         </div>
         <div class="large-2 columns">
+            <div class="kitty"></div>
             <a href="http://twitter.com/bobuk"><img src="/static/img/bobuk.png" class="right hide-for-small"/></a>
         </div>
         <hr class="header"/>
@@ -59,7 +64,7 @@
   ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
   '.js><\/script>')
   </script>
-  
+
   <script src="/static/js/foundation.min.js"></script>
   <script>
     $(document).foundation();

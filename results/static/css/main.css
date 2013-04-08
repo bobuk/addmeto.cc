@@ -33,7 +33,7 @@ article img {
 
 article img:hover {
     -webkit-box-shadow: 0 0 6px 1px rgba(255, 88, 64, 0.5);
-    box-shadow: 0 0 6px 1px rgba(255, 88, 64, 0.5); 
+    box-shadow: 0 0 6px 1px rgba(255, 88, 64, 0.5);
 }
 
 .titles:before {
@@ -87,6 +87,12 @@ hr.header {
   clear: both;
   margin: 0.25em 0 1.1875em;
   height: 0;
+}
+
+.kitty {
+    width: 64px;
+    height: 64px;
+    display: inline-block;
 }
 
 footer {
