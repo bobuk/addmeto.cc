@@ -49,6 +49,10 @@ article img:hover {
 article ul li a {
     color: #2d3793;
 }
+article ul li a:visited
+{
+    color: #490A3D;
+}
 article ul {
     padding-bottom:0.5em;
     list-style-type:hebrew;
