@@ -1,12 +1,16 @@
-#!v/bin/python
+#!.v/bin/python
 # -*- mode: python -*-
 
 import os, sys, shutil, gzip
+import subprocess
 from datetime import datetime
 import markdown, pyatom
 
 TEMPLATE = 'templates/index.html'
 
+def gitdate(filename):
+    return int(subprocess.check_output(['git', 'log', '-1', '--format=%at', filename]).strip())
+    
 def source_constructor(filename):
     if not filename.endswith('.md'):
         filename = filename + '.md'
@@ -35,7 +39,7 @@ def get_updated_list(sources = get_source_list()):
     for fl in sources:
         dest = dest_constructor(fl)
         if not os.path.isfile(dest) or \
-            os.path.getmtime(dest) < max(os.path.getmtime(fl), template_ts):
+            os.path.getmtime(dest) < max(gitdate(fl), template_ts):
                 rebuild.append( fl )
     return rebuild
 
@@ -100,7 +104,7 @@ def rss(sources):
 
     for post in list(reversed(sources))[:10]:
         p = load_post(post)
-        p['updated'] = datetime.fromtimestamp(os.path.getmtime(post))
+        p['updated'] = datetime.fromtimestamp(gitdate(post))
         feed.add(title=p['title'],
              content=p['text'],
              content_type="html",
