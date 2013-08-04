@@ -1,4 +1,4 @@
-#!.v/bin/python
+#!/usr/bin/env python
 # -*- mode: python -*-
 
 import os, sys, shutil, gzip
