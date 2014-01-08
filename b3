@@ -4,6 +4,7 @@
 import os, sys, shutil, gzip
 from datetime import datetime
 import markdown, pyatom
+import subprocess
 
 TEMPLATE = 'templates/index.html'
 
@@ -19,6 +20,12 @@ def source_deconstructor(filename):
         filename = filename[len('pages/'):]
     return filename
 
+def get_git_time(filename):
+    fluite = "git log --format='format:%%at' '%s'"
+    res = subprocess.check_output(fluite % filename, shell=True).decode()
+    res = res.split('\n')[0]
+    return int(res)
+
 def dest_constructor(filename):
     return os.path.join('results', source_deconstructor(filename), 'index.html')
 
@@ -27,15 +34,15 @@ def get_source_list():
     for fl in os.listdir('pages'):
         if fl.endswith('.md') and fl not in ['archive.md', 'about.md']:
             sources.append(os.path.join('pages', fl))
-    return sources
+    return sorted(sources)
 
 def get_updated_list(sources = get_source_list()):
     rebuild = []
-    template_ts = os.path.getmtime(TEMPLATE)
+    template_ts = get_git_time(TEMPLATE)
     for fl in sources:
         dest = dest_constructor(fl)
         if not os.path.isfile(dest) or \
-            os.path.getmtime(dest) < max(os.path.getmtime(fl), template_ts):
+            os.path.getmtime(dest) < max(get_git_time(fl), template_ts):
                 rebuild.append( fl )
     return rebuild
 
@@ -100,7 +107,7 @@ def rss(sources):
 
     for post in list(reversed(sources))[:10]:
         p = load_post(post)
-        p['updated'] = datetime.fromtimestamp(os.path.getmtime(post))
+        p['updated'] = datetime.fromtimestamp(get_git_time(post))
         feed.add(title=p['title'],
              content=p['text'],
              content_type="html",
