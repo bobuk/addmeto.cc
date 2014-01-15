@@ -1,5 +1,6 @@
 #!/bin/bash
 cd results
-s3cmd --no-preserve --recursive --exclude=feed sync * s3://addmeto.cc/
+s3cmd --no-preserve --recursive --exclude=feed --exclude=index.html sync * s3://addmeto.cc/
+s3cmd --no-preserve --recursive --exclude=feed --add-header="Cache-Control: max-age=0, private, must-revalidate" sync index.html s3://addmeto.cc/
 s3cmd --no-preserve --add-header=Content-Encoding:gzip sync -m 'text/xml' sync feed s3://addmeto.cc/
 cd ..

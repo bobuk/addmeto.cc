@@ -150,7 +150,14 @@ __cfg_singleton = None
 def config():
     global __cfg_singleton
     if not __cfg_singleton:
-        __cfg_singleton = json.loads(open(os.path.expanduser('~/.kippt'), 'r').read())
+        config_path = os.path.expanduser(
+            os.path.join(
+                '~/Yandex.Disk.localized/',
+                'System/', 'etc/'
+                'kippt.conf'
+            )
+        )
+        __cfg_singleton = json.loads(open(config_path, 'r').read())
     return __cfg_singleton
 
 def get_list(k, slug='inbox'):
@@ -174,12 +181,15 @@ def show(k):
     res = []
     clips = get_clips(k, 'inbox')
     for clip in clips:
-        if '{' in clip['notes']:
-            before, middle = clip['notes'].split('{', 1)
-            middle, other = middle.split('}', 1)
-            note = "* " + before + '[' + middle + '](' + clip['url'] + ')' + other
+        if 'notes' not in clip or clip['notes'] == None:
+            note = ""
         else:
-            note = "* {notes} [ссылка]({url})".format_map(clip)
+            if '{' in clip['notes']:
+                before, middle = clip['notes'].split('{', 1)
+                middle, other = middle.split('}', 1)
+                note = "* " + before + '[' + middle + '](' + clip['url'] + ')' + other
+            else:
+                note = "* {notes} [ссылка]({url})".format_map(clip)
         ts = int(clip['updated'])
         if '#last' in note:
             ts = ts - 1000000000
