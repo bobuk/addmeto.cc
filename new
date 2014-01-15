@@ -1,4 +1,4 @@
 #!/bin/bash
-#./kippter >> pages/`date +'%Y-%m-%d'`.md
-date >> pages/`date +'%Y-%m-%d'`.md
+./kippter >> pages/`date +'%Y-%m-%d'`.md
+#date >> pages/`date +'%Y-%m-%d'`.md
 echo  pages/`date +'%Y-%m-%d'`.md 
