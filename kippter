@@ -191,6 +191,9 @@ def show(k):
             else:
                 note = "* {notes} [ссылка]({url})".format_map(clip)
         ts = int(clip['updated'])
+        if '#tech' in note:
+            ts = ts - 500000000
+            note = note.replace('#tech', '')
         if '#last' in note:
             ts = ts - 1000000000
             note = note.replace('#last', '')
