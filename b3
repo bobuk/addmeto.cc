@@ -27,7 +27,7 @@ def get_git_time(filename):
     return int(res)
 
 def dest_constructor(filename):
-    return os.path.join('results', source_deconstructor(filename), 'index.html')
+    return os.path.join('results', 'pages', source_deconstructor(filename), 'index.html')
 
 def get_source_list():
     sources = []
