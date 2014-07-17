@@ -94,7 +94,7 @@ def archive(sources):
     res = ['# Архив', '', '']
     for post in reversed(sources):
         p = load_post(post)
-        res.append('* [{title}](/{file}) ({date})'.format_map(p))
+        res.append('* [{title}](/pages/{file}) ({date})'.format_map(p))
     with open('pages/archive.md', 'w') as fl:
         fl.write('\n'.join(res))
     write('pages/archive.md')
@@ -112,7 +112,7 @@ def rss(sources):
              content=p['text'],
              content_type="html",
              author='Бобук',
-             url="http://addmeto.cc/" + p["file"],
+             url="http://addmeto.cc/pages/" + p["file"],
              updated=p["updated"]
         )
     with open('results/feed', 'wb') as fl:
