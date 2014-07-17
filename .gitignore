@@ -6,6 +6,7 @@ results/feed
 results/index.html
 results/2*/
 results/static/
+results/pages/
 pages/archive.md
 .idea
 *.sublime-*
