@@ -3,13 +3,16 @@ import sys
 import os
 from datetime import datetime
 
-if len(sys.argv) = 2:
-    name = sys.argv[1]
+if len(sys.argv) > 1:
+    name = '-'.join(sys.argv[1:])
+    header = ' '.join(sys.argv[1:])
     date = datetime.now().strftime('%Y-%m-%d')
     page = os.path.join('pages', date + ':' + name + '.md')
-    images = os.path.join('site', 'images', date + ':' + name)
+    images = os.path.join('site', 'images', date + '-' + name)
     with open(page, 'w') as fl:
-        fl.write("# " + name + "\n\n")
+        fl.write("# " + header + "\n\n")
     os.system('git add ' + page)
     print('New article created ' + page)
     print('Images must be located at ' + images)
+else:
+    print('Give me a name of new article. Bah!')
