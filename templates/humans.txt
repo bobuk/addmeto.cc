@@ -4,6 +4,7 @@
   Location: Москва
 
 /* SITE */
+  Version: 14.1
   Standards: HTML5, CSS3
   Components: Modernizr, jQuery
   Software:

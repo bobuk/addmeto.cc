@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+# -*- mode: python -*-
+
+import os, sys, shutil, gzip
+from datetime import datetime
+import markdown, pyatom
+import subprocess
+
+TEMPLATE = 'templates/index.html'
+
+OUTPUT = "site/"
+
+def get_git_date(filename):
+    fluite = "git log --format='format:%%at' '%s'"
+    res = subprocess.check_output(fluite % filename, shell=True).decode()
+    res = res.split('\n')[0].strip()
+    print(filename, res)
+    val = int(res)
+    return val
+
+class MarkExtension(markdown.extensions.Extension):
+    MARK_RE = r"(\~\~)(.+?)(\~\~)"
+    def extendMarkdown(self, md, md_globals):
+        md.inlinePatterns.add('mark', markdown.inlinepatterns.SimpleTagPattern(self.MARK_RE, 'mark'), '<not_strong')
+
+def markify(text):
+    return markdown.markdown(text, [MarkExtension(), 'footnotes', 'fenced_code', 'codehilite', 'tables', 'extra', 'nl2br'])
+
+
+class Page:
+    def __init__(self, filename):
+        self.filename = filename
+        self.text = None
+        self.parse_filename(filename)
+
+    def parse_filename(self, filename):
+        self.fullname = os.path.basename(filename)
+        self.date, self.name = self.filename.split(':')
+        self.name = self.name.split('.md')[0]
+        self.destination = os.path.join(OUTPUT, 'pages', self.name, 'index.html')
+
+    def git_date(self):
+        return get_git_date(self.filename)
+
+    def load(self):
+        data = open(self.filename, 'r').read()
+        title, data = data.split('\n', 1)
+        if title.startswith('#'):
+            junk, title = title.split(' ', 1)
+        self.title = title
+        self.text = markify(data.strip())
+
+    def fill_template(self):
+        body = open(TEMPLATE, 'r').read()
+        self.load()
+        for (key,value) in (('title', self.title), ('text', self.text), ('file', self.name)):
+            body = body.replace('@' + key + '@', value)
+        self.body = body
+        return body
+
+    def write(self):
+        self.fill_template()
+        if not os.path.isdir(os.path.dirname(self.destination)):
+            os.makedirs(os.path.dirname(self.destination))
+
+        with open(self.destination, 'w') as fl:
+            fl.write(self.body)
+
+class PagesList:
+    def __init__(self, pagedir):
+        self.dir = pagedir
+        self.pages = self.get_pages_list()
+
+    def get_pages_list(self):
+        sources = []
+        for fl in os.listdir(self.dir):
+            if fl.endswith('.md') and not fl.endswith('.draft'):
+                sources.append(Page(os.path.join(self.dir, fl)))
+        return sorted(sources, key=lambda x:x.filename)
+
+    def load_updated(self):
+        rebuild = []
+        template_ts = get_git_date(TEMPLATE)
+        for fl in self.pages:
+            if not os.path.isfile(fl.destination) or \
+                os.path.getmtime(fl.destination) < max(fl.git_date(), template_ts):
+                    rebuild.append( fl )
+        self.updated = rebuild
+        return rebuild
+
+    def rss(self):
+        feed = pyatom.AtomFeed(title="Еще один линкблог",
+                    feed_url="http://addmeto.cc/feed",
+                    url="http://addmeto.cc",
+                    author="Григорий Бакунов")
+
+        for post in list(reversed(self.sources))[:10]:
+            post.load()
+            post.updated = datetime.fromtimestamp(post.git_date())
+            feed.add(title=post.title,
+                 content=post.text,
+                 content_type="html",
+                 author='Бобук',
+                 url="http://addmeto.cc/pages/" + post.name + "/",
+                 updated=post.updated
+            )
+        with open('site/feed', 'wb') as fl:
+            fl.write(bytes(feed.to_string(), 'utf-8'))
+            # fl.write(gzip.compress(bytes(feed.to_string(), 'utf-8')))
+
+def main(args):
+    sources = PagesList('pages')
+    sources.load_updated()
+    last = sources.pages[-1]
+    for src in sources.updated:
+        sys.stdout.write('>> ' + src.name +' -> ' + src.destination + ' \n')
+        src.write()
+    if last in sources.updated:
+        sys.stdout.write('>> Index page updated to ' + last.name + '\n')
+        shutil.copy2(last.destination, OUTPUT + 'index.html')
+    if len(sources.updated) > 0:
+        sources.rss()
+        sys.stdout.write('>> RSS updated\n')
+
+if __name__ == '__main__':
+    main(sys.argv)
