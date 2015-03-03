@@ -1,4 +1,15 @@
-#!/bin/bash
-./kippter >> pages/`date +'%Y-%m-%d'`.md
-#date >> pages/`date +'%Y-%m-%d'`.md
-echo  pages/`date +'%Y-%m-%d'`.md 
+#!v/bin/python
+import sys
+import os
+from datetime import datetime
+
+if len(sys.argv) = 2:
+    name = sys.argv[1]
+    date = datetime.now().strftime('%Y-%m-%d')
+    page = os.path.join('pages', date + ':' + name + '.md')
+    images = os.path.join('site', 'images', date + ':' + name)
+    with open(page, 'w') as fl:
+        fl.write("# " + name + "\n\n")
+    os.system('git add ' + page)
+    print('New article created ' + page)
+    print('Images must be located at ' + images)
