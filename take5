@@ -14,7 +14,6 @@ def get_git_date(filename):
     fluite = "git log --format='format:%%at' '%s'"
     res = subprocess.check_output(fluite % filename, shell=True).decode()
     res = res.split('\n')[0].strip()
-    print(filename, res)
     val = int(res)
     return val
 
@@ -94,7 +93,7 @@ class PagesList:
                     url="http://addmeto.cc",
                     author="Григорий Бакунов")
 
-        for post in list(reversed(self.sources))[:10]:
+        for post in list(reversed(self.pages))[:10]:
             post.load()
             post.updated = datetime.fromtimestamp(post.git_date())
             feed.add(title=post.title,
