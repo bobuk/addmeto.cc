@@ -17,13 +17,8 @@ def get_git_date(filename):
     val = int(res)
     return val
 
-class MarkExtension(markdown.extensions.Extension):
-    MARK_RE = r"(\~\~)(.+?)(\~\~)"
-    def extendMarkdown(self, md, md_globals):
-        md.inlinePatterns.add('mark', markdown.inlinepatterns.SimpleTagPattern(self.MARK_RE, 'mark'), '<not_strong')
-
 def markify(text):
-    return markdown.markdown(text, [MarkExtension(), 'footnotes', 'fenced_code', 'codehilite', 'tables', 'extra', 'nl2br'])
+    return markdown.markdown(text, ['footnotes', 'fenced_code', 'codehilite', 'tables', 'extra', 'nl2br'])
 
 
 class Page:
@@ -104,8 +99,8 @@ class PagesList:
                  updated=post.updated
             )
         with open('site/feed', 'wb') as fl:
-            fl.write(bytes(feed.to_string(), 'utf-8'))
-            # fl.write(gzip.compress(bytes(feed.to_string(), 'utf-8')))
+            # fl.write(bytes(feed.to_string(), 'utf-8'))
+            fl.write(gzip.compress(bytes(feed.to_string(), 'utf-8')))
 
 def main(args):
     sources = PagesList('pages')
