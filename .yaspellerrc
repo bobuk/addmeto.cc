@@ -1,0 +1,21 @@
+{
+  "excludeFiles": [
+	"README.md",
+	"b3",
+	"kippter",
+	"new",
+	"results",
+	"source",
+	"sync",
+	"node_modules",
+	"templates"
+  ],
+  "lang": "ru,en",
+  "fileExtensions": [
+    ".md"
+  ],
+  "dictionary": [
+  "багами",
+  "баги"
+  ]
+}
